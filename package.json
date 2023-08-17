@@ -6,9 +6,7 @@
   "description": "This is a multi-virtual camera control.",
   "keywords": [
     "CameraControl"
-  ],
-  "repository": {
-    "url": "https://gitlab.internal.unity.cn/hmi-assembler/carcameracontrols.git",
-    "type": "git"
+  ]
+
   }
 }
