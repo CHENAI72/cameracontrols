@@ -16,8 +16,8 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] CinemachineCameraOffset CameraOffset;//第三人称偏移
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
     [SerializeField] CinemachineBrain MainCamera;
-   
-  
+
+    private Vector2 CameraPos;
     private string names;
     private string Isname;
     private bool dollybool;
@@ -75,6 +75,10 @@ public class CameraManager1 : MonoBehaviour
            
 
         }
+        if (freeLook!=null)
+        {
+            CameraPos = new Vector2(FreeLook.m_XAxis.Value, FreeLook.m_YAxis.Value);
+        }
         OnDollyCamera.AddListener(FreeLookCameraTransitions);
         MoveFixedCameraStart.AddListener( CameraMoveFixedStart);
         MoveFixedCameraEnd.AddListener(CameraMoveFixedEnd);
@@ -118,7 +122,22 @@ public class CameraManager1 : MonoBehaviour
         }
     }
   
-
+    public void FreeLookCameraPosSave()
+    {
+        if (freeLook!=null)
+        {
+            CameraPos = new Vector2(FreeLook.m_XAxis.Value, FreeLook.m_YAxis.Value);
+        }
+       
+    }
+    public void FreeLookBackStartPos(float time)
+    {
+        if (freeLook != null)
+        {
+            DOTween.To(() => FreeLook.m_XAxis.Value, x => FreeLook.m_XAxis.Value = x, CameraPos.x, time);
+            DOTween.To(() => FreeLook.m_YAxis.Value, x => FreeLook.m_YAxis.Value = x, CameraPos.y, time);
+        }
+    }
 # region fixedCamera
     public void fixedCameraName(string name)//固定
     {
