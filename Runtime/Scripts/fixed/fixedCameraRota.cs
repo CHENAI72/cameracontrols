@@ -3,37 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using DG.Tweening;
-using System;
 
 public class fixedCameraRota : MonoBehaviour
 {
 
-  
+    public bool IsTransition;
+    public List<CinemachineVirtualCamera> ThisTransitionCamera;//要过渡的虚拟相机
 
-    private bool IsRota=false;
-    public bool IsZhong;
-    public List<CinemachineVirtualCamera> ThisZhongCamera;//要过度的虚拟相机
-    public float RotaSpeed=0.08f;
-    public float ZoomSpeed=2f;
-    private  Quaternion startQuta;
-    [HideInInspector]
-    public float Min=15f;
-    [HideInInspector]
-    public float Max=40f;
-  
+    private bool IsRota = false;
+    private float XAxis;
+    private float YAxis;
     private void Awake()
     {
-       
-        startQuta = transform.rotation;
-   
+
+        XAxis = this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
+        YAxis= this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
 
     }
   
     public void MoveStart()
     {
 
-        transform.DOLocalRotateQuaternion(startQuta, 1.5f);
-       
+        DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
+            x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = x, XAxis, 0.6f);
+        DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value,
+            x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = x, YAxis, 0.6f);
     }
     public bool ISROTA
     {
@@ -48,17 +42,17 @@ public class fixedCameraRota : MonoBehaviour
     }
     public List<CinemachineVirtualCamera> virCamera
     {
-        get { return ThisZhongCamera; }
+        get { return ThisTransitionCamera; }
         set
         {
-            ThisZhongCamera = value;
+            ThisTransitionCamera = value;
         }
     }
     public bool ISZHONG
     {
         get
         {
-            return IsZhong;
+            return IsTransition;
         }
      
     }

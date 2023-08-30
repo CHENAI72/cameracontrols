@@ -5,71 +5,64 @@ using DG.Tweening;
 using System.Collections;
 using System;
 using UnityEngine.Rendering;
+using UnityEngine.Events;
 
 public class CameraManager1 : MonoBehaviour
 {
-   
-
 
     //相机
     [SerializeField] DollyMoveCamera DollyMoveCam;
     [SerializeField] CinemachineFreeLook freeLook;
     [SerializeField] CinemachineCameraOffset CameraOffset;//第三人称偏移
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
-
-    [HideInInspector]
-    public Dictionary<string, CinemachineVirtualCamera> Camerapairs = new Dictionary<string, CinemachineVirtualCamera>();
-    [HideInInspector]
-    public string names;
-    [HideInInspector]
-    public string Isname;
+    [SerializeField] CinemachineBrain MainCamera;
+   
+  
+    private string names;
+    private string Isname;
     private bool dollybool;
     private bool IsFixed = true;
+    private Dictionary<string, CinemachineVirtualCamera> Camerapairs = new Dictionary<string, CinemachineVirtualCamera>();
     private Dictionary<string, fixedCameraRota> fixedRota = new Dictionary<string, fixedCameraRota>();
+  
+    public UnityEvent MoveFixedCameraStart;//进入车内
+    public UnityEvent MoveFixedCameraEnd;
+    public UnityEvent<bool> OnDollyCamera;//是否在轨道移动
+    public UnityEvent<bool> OnFreeLookCameraIsRota;//是否在旋转
+    public UnityEvent<bool> OnFreeLookCameraBoolReversal;//是否在旋转,但是反转bool;
+    public UnityEvent<bool> OnFixedCamerasIsRota;//是否在旋转
+    public UnityEvent<bool> OnFixedCamerasBoolReversal;//是否在旋转,但是反转bool;
 
-    public event Action windowStart;//进入车内
-    public event Action windowEnd;
-    public event Action<bool> OnDollyCamera;//是否在轨道移动
-    [HideInInspector]
-    public bool LookCamera;
-    [HideInInspector]
-    public bool FixedCamera;
+    private bool LookCameraRota = true;
+    private bool FixedCameraRota = true;
+    private bool LookCamera =true;
+    private bool FixedCamera;
 
-    //Touch
-    [SerializeField] float ZoomSpeed = 50f;
+    [Header("FreelookCameraInput")]
     [SerializeField] CameraInputTou anchor;
-    [SerializeField] float Min = 15f;
-    [SerializeField] float Max = 60f;
+    [SerializeField] float freeLookXSpeed = 0.2f;
+    [SerializeField] float freeLookYSpeed = 0.8f;
+    [SerializeField] float freeLookZoomSpeed = 4f;
+    [SerializeField] float freeLookZoomMin = 15f;
+    [SerializeField] float freeLookZoomMax = 80f;
+    [SerializeField] float startBlackScreen2DTime = 0.5f;
+    [SerializeField] float blackScreen2DTime = 1f;
+    [SerializeField] float freeLookDamping = 0.5f;
+
+    [Header("fixedCameraInput")]
+    [SerializeField] float FixedXSpeed = 0.08f;
+    [SerializeField] float FixedYSpeed = 0.4f;
+    [SerializeField] float FixedZoomSpeed = 2f;
+    [SerializeField] float FixedZoomMin = 15f;
+    [SerializeField] float FixedZoomMax = 40f;
+    [SerializeField] float FixedDamping = 0.1f;
     private bool IsDolly;
 
     [SerializeField] List<Transform> UI3DPos;
 
-
-   
-
     private Vector2 TouTapVetor;
 
-
-    private Vector3 eulerAngle;
-    private Vector3 targetEulerAngle;
-
-
-   
-    private void OnDisable()
-    {
-        if (anchor != null)
-        {
-
-          
-            anchor.UnRegistPrimaryTouchTapCallBack(TouchTap);
-            anchor.UnRegistPrimaryTouchPosChange(PrimaryTouchDeltaCallBack);
-            anchor.UnRegistZoomCallBack(ZoomCallBack);
-            anchor.UnRegistThreeFingerDeltaCallBack(ThreeFingerDelta);
-        }
-             OnDollyCamera -= FreeLookCameraTransitions;
-             windowStart -= CamerawindowStart;
-             windowEnd -= CamerawindowEnd;
-    }
+  
     private void Start()
     {
         if (anchor != null)
@@ -78,14 +71,30 @@ public class CameraManager1 : MonoBehaviour
             anchor.RegistPrimaryTouchPosChange(PrimaryTouchDeltaCallBack);
             anchor.RegistZoomCallBack(ZoomCallBack);
             anchor.RegistThreeFingerDeltaCallBack(ThreeFingerDelta);
-            OnDollyCamera += value => { IsDolly = value; };
+            OnDollyCamera.AddListener((e) => { IsDolly = e; });
+           
 
         }
-        OnDollyCamera += FreeLookCameraTransitions;
-        windowStart += CamerawindowStart;
-        windowEnd += CamerawindowEnd;
+        OnDollyCamera.AddListener(FreeLookCameraTransitions);
+        MoveFixedCameraStart.AddListener( CameraMoveFixedStart);
+        MoveFixedCameraEnd.AddListener(CameraMoveFixedEnd);
+      
     }
-   
+    private void OnDisable()
+    {
+        if (anchor != null)
+        {
+
+
+            anchor.UnRegistPrimaryTouchTapCallBack(TouchTap);
+            anchor.UnRegistPrimaryTouchPosChange(PrimaryTouchDeltaCallBack);
+            anchor.UnRegistZoomCallBack(ZoomCallBack);
+            anchor.UnRegistThreeFingerDeltaCallBack(ThreeFingerDelta);
+        }
+        OnDollyCamera .RemoveListener(FreeLookCameraTransitions);
+        MoveFixedCameraStart.RemoveListener(CameraMoveFixedStart);
+        MoveFixedCameraEnd.RemoveListener(CameraMoveFixedEnd);
+    }
     public CinemachineFreeLook FreeLook
     {
         get
@@ -108,6 +117,8 @@ public class CameraManager1 : MonoBehaviour
             CameraOffset = value;
         }
     }
+  
+
 # region fixedCamera
     public void fixedCameraName(string name)//固定
     {
@@ -129,7 +140,7 @@ public class CameraManager1 : MonoBehaviour
             if (name!=Isname)
             {
 
-                if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisZhongCamera.Count != 0 && FixedCamera)
+                if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisTransitionCamera.Count != 0 && FixedCamera)
                 {
                     StartCoroutine("IsvirCameraZhong", name);
                    
@@ -148,11 +159,15 @@ public class CameraManager1 : MonoBehaviour
                 fixedRota[name].ISROTA = true;
                 LookCamera = false;
                 FixedCamera = true;
-                DOTween.To(() => CameraOff.m_Offset, x => CameraOff.m_Offset = x, Vector3.zero, 1f);
+                if (CameraOff!=null)
+                {
+                    DOTween.To(() => CameraOff.m_Offset, x => CameraOff.m_Offset = x, Vector3.zero, 1f);
+                }
+              
                 Isname = name;
                 if (IsFixed)
                 {
-                    windowStart?.Invoke();
+                    MoveFixedCameraStart?.Invoke();
                     IsFixed = false;
 
                 } 
@@ -176,7 +191,7 @@ public class CameraManager1 : MonoBehaviour
 
                             Camerapairs.Add(name, fixedCamera[i]);
 
-                            if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisZhongCamera.Count != 0 && FixedCamera)
+                            if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisTransitionCamera.Count != 0 && FixedCamera)
                             {
 
                                 StartCoroutine("IsvirCameraZhong", name);
@@ -200,8 +215,11 @@ public class CameraManager1 : MonoBehaviour
                             {
                                 FixedCamera = true;
                                 LookCamera = false;
-                                DOTween.To(() => CameraOff.m_Offset, x => CameraOff.m_Offset = x, Vector3.zero, 1f);
-                                windowStart?.Invoke();
+                                if (CameraOff!=null)
+                                {
+                                    DOTween.To(() => CameraOff.m_Offset, x => CameraOff.m_Offset = x, Vector3.zero, 1f);
+                                }
+                                MoveFixedCameraStart?.Invoke();
                                 IsFixed = false;
                             }
                       
@@ -259,9 +277,9 @@ public class CameraManager1 : MonoBehaviour
     #endregion
 
 
-    public void FreeLookCameraRota(Vector2 xy)
+    public void FreeLookCameraRota(Vector2 xy,float time)
     {
-        float time = 0;
+        float timeValue = 0;
         if (freeLook == null)
         {
             Debug.LogError("请添加第三人称虚拟相机");
@@ -269,11 +287,11 @@ public class CameraManager1 : MonoBehaviour
         else
         {
 
-            DOTween.To(() => time, x => time = x, 1, 2).OnComplete(() => {
+            DOTween.To(() => timeValue, x => timeValue = x, 1, time).OnComplete(() => {
 
                 DOTween.To(() => freeLook.m_XAxis.Value, x => freeLook.m_XAxis.Value = x, xy.x, 0.5f);
             });
-            DOTween.To(() => time, x => time = x, 1, 2).OnComplete(() => {
+            DOTween.To(() => timeValue, x => timeValue = x, 1, time).OnComplete(() => {
 
                 DOTween.To(() => freeLook.m_YAxis.Value, x => freeLook.m_YAxis.Value = x, xy.y, 0.5f);
             });
@@ -294,6 +312,10 @@ public class CameraManager1 : MonoBehaviour
         {
             threeCamera();
         }
+    }
+    public void CameraHandoverTime(float time)
+    {
+        MainCamera.m_DefaultBlend.m_Time = time;
     }
     public void DollyCamera(bool Bool)//轨道
     {
@@ -333,24 +355,22 @@ public class CameraManager1 : MonoBehaviour
 
     private void FalseDollyAll()
     {
-         DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, 0.5f).OnUpdate(() =>
+         DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, startBlackScreen2DTime).OnUpdate(() =>
                 {
 
         DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
-    });
-                Invoke("FalseDolly", 1);
+    }).OnComplete(()=> {
 
-
-}
-    private void FalseDolly()
-    {
-
-        DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 1, 1f).OnUpdate(() =>
+        DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 1, blackScreen2DTime).OnUpdate(() =>
         {
 
             DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
         });
+
+    });        
+
     }
+   
     public void CameraDictionaryClear()
     {
         Camerapairs.Clear();
@@ -402,7 +422,7 @@ public class CameraManager1 : MonoBehaviour
                 }
                 if (IsFixed == false)
                 {
-                    windowEnd?.Invoke();
+                    MoveFixedCameraEnd?.Invoke();
                     IsFixed = true;
                 }
 
@@ -456,16 +476,57 @@ public class CameraManager1 : MonoBehaviour
    
     private void TouchTap(Vector2 vector)
     {
-
+        float time = 0;
         TouTapVetor = Vector2.zero;
-     
+        if (FixedCamera )
+        {
+            if (Camerapairs.Count!=0)
+            {
+                if (Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue != 0 ||
+               Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue != 0)
+                {
+                    DOTween.To(() => time, x => time = x, 1, FixedDamping).OnComplete(() =>
+                    {
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
+                        OnFixedCamerasIsRota?.Invoke(false);
+                        OnFixedCamerasBoolReversal?.Invoke(true);
+                        FixedCameraRota = true;
+                    });
+                }
+              
+            }
+
+         
+        }
+        if (LookCamera)
+        {
+            if (FreeLook!=null)
+            {
+                if (FreeLook.m_XAxis.m_InputAxisValue != 0 || FreeLook.m_YAxis.m_InputAxisValue != 0)
+                {
+                    DOTween.To(() => time, x => time = x, 1, freeLookDamping).OnComplete(() =>
+                    {
+                        FreeLook.m_XAxis.m_InputAxisValue = 0;
+                        FreeLook.m_YAxis.m_InputAxisValue = 0;
+                        OnFreeLookCameraIsRota?.Invoke(false);
+                        OnFreeLookCameraBoolReversal?.Invoke(true);
+                        LookCameraRota = true;
+                    });
+                }
+               
+            }
+          
+          
+        }
+      
 
     }
 
 
     private void PrimaryTouchDeltaCallBack(Vector2 vector)
     {
-
+      
         if (FixedCamera)
         {
             if (fixedRota[Isname].ISROTA)
@@ -473,16 +534,24 @@ public class CameraManager1 : MonoBehaviour
                
                 if (TouTapVetor != Vector2.zero)
                 {
-                   
-                    if (vector.x > 1f || vector.x < -1f || vector.y > 1f || vector.y < -1f)
+                    float MoveX = (TouTapVetor.x - vector.x) * FixedXSpeed;
+                    float MoveY = (TouTapVetor.y - vector.y) * FixedYSpeed;
+                    if (vector.x > 1f || vector.x < -1f )
                     {
-                       targetEulerAngle = -(TouTapVetor - vector) * 0.08f;
-                       eulerAngle = Vector3.Lerp(eulerAngle, targetEulerAngle, Time.deltaTime * fixedRota[Isname].RotaSpeed);
-                        fixedRota[Isname].gameObject.transform.rotation = Quaternion.Lerp(fixedRota[Isname].gameObject.transform.rotation, fixedRota[Isname].gameObject.transform.rotation * Quaternion.Euler(eulerAngle.y, eulerAngle.x, eulerAngle.z), 1f);
-                        fixedRota[Isname].gameObject.transform.localEulerAngles = new Vector3(fixedRota[Isname].gameObject.transform.localEulerAngles.x, fixedRota[Isname].gameObject.transform.localEulerAngles.y, 0);
-                       
+                        
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = Time.deltaTime * MoveX;
+                     
                     }
-
+                    if (vector.y > 1f || vector.y < -1f)
+                    {
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = Time.deltaTime * MoveY;
+                    }
+                    if (FixedCameraRota)
+                    {
+                        OnFixedCamerasIsRota?.Invoke(true);
+                        OnFixedCamerasBoolReversal?.Invoke(false);
+                          FixedCameraRota = false;
+                    }
                 }
                 TouTapVetor = vector;
             }
@@ -491,27 +560,27 @@ public class CameraManager1 : MonoBehaviour
         if (LookCamera)
         {
 
-            float time = 0;
-            //  float time1 = 0;
 
             if (TouTapVetor != Vector2.zero)
             {
-
-                float MoveX = (TouTapVetor.x - vector.x) * 0.2f;
-                float MoveY = (TouTapVetor.y - vector.y) * 0.8f;
-                if (MoveX > 1f || MoveX < -1f || MoveY > 1f || MoveY < -1f)
+               
+                float MoveX = (TouTapVetor.x - vector.x) * freeLookXSpeed;
+                float MoveY = (TouTapVetor.y - vector.y) * freeLookYSpeed; 
+                if (MoveX > 1f || MoveX < -1f )
                 {
-                    DOTween.To(() => time, x => time = x, 1, 0.6f).OnUpdate(() =>
-                    {
-
-                        FreeLook.m_XAxis.m_InputAxisValue = Time.deltaTime * MoveX;
-                       FreeLook.m_YAxis.m_InputAxisValue = Time.deltaTime * MoveY;
-
-                    }).OnComplete(() => {
-
-                        FreeLook.m_XAxis.m_InputAxisValue = 0;
-                        FreeLook.m_YAxis.m_InputAxisValue = 0;
-                    });
+                    FreeLook.m_XAxis.m_InputAxisValue = Time.deltaTime * MoveX;
+                    
+                }
+                if (MoveY > 1f || MoveY < -1f)
+                {
+                    FreeLook.m_YAxis.m_InputAxisValue = Time.deltaTime * MoveY;
+                 
+                }
+                if (LookCameraRota)
+                {
+                    OnFreeLookCameraIsRota?.Invoke(true);
+                    OnFreeLookCameraBoolReversal?.Invoke(false);
+                    LookCameraRota = false;
                 }
 
             }
@@ -519,38 +588,6 @@ public class CameraManager1 : MonoBehaviour
 
             TouTapVetor = vector;
 
-
-            // if (CameraManager1.Instance.LookCamera)
-            // {
-            //    if (vector.x != 0)
-            //    {
-
-
-            //        CameraManager1.Instance.FreeLook.m_XAxis.m_InputAxisValue = vector.x / 150;
-            //        DOTween.To(() => time, x => time = x, 1, 0.5f).OnComplete(() =>
-            //        {
-            //            CameraManager1.Instance.FreeLook.m_XAxis.m_InputAxisValue = 0;
-            //        });
-
-            //    }
-            //    if (vector.y > 15f || vector.y < -15f)
-            //    {
-
-
-            //        CameraManager1.Instance.FreeLook.m_YAxis.m_InputAxisValue = vector.y / 50;
-            //        DOTween.To(() => time1, x => time1 = x, 1, 0.5f).OnComplete(() =>
-            //        {
-            //            CameraManager1.Instance.FreeLook.m_YAxis.m_InputAxisValue = 0;
-
-
-            //        });
-
-
-
-            //    }
-
-
-            // }
         }
     }
     private void ZoomCallBack(ZoomType touch)//缩放
@@ -563,16 +600,16 @@ public class CameraManager1 : MonoBehaviour
                 case ZoomType.ZoomIn:
                     if (anchor.ZoomDistance > 1f)
                     {
-                       FreeLook.m_Lens.FieldOfView -= 1 * Time.deltaTime * ZoomSpeed;
-                       FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, Min, Max);
+                       FreeLook.m_Lens.FieldOfView -= 1 * Time.deltaTime * freeLookZoomSpeed;
+                       FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
                     }
 
                     break;
                 case ZoomType.ZoomOut:
                     if (anchor.ZoomDistance > 1f)
                     {
-                        FreeLook.m_Lens.FieldOfView += 1 * Time.deltaTime * ZoomSpeed;
-                       FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, Min, Max);
+                        FreeLook.m_Lens.FieldOfView += 1 * Time.deltaTime * freeLookZoomSpeed;
+                       FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
                     }
 
                     break;
@@ -588,8 +625,8 @@ public class CameraManager1 : MonoBehaviour
                 case ZoomType.ZoomIn:
                     if (anchor.ZoomDistance > 1f)
                     {
-                        Camerapairs[Isname].m_Lens.FieldOfView -= 1 * Time.deltaTime * fixedRota[Isname].ZoomSpeed;
-                        Camerapairs[Isname].m_Lens.FieldOfView = Mathf.Clamp(Camerapairs[Isname].m_Lens.FieldOfView, fixedRota[Isname].Min, fixedRota[Isname].Max);
+                        Camerapairs[Isname].m_Lens.FieldOfView -= 1 * Time.deltaTime * FixedZoomSpeed;
+                        Camerapairs[Isname].m_Lens.FieldOfView = Mathf.Clamp(Camerapairs[Isname].m_Lens.FieldOfView, FixedZoomMin, FixedZoomMax);
                     }
 
                     break;
@@ -598,8 +635,8 @@ public class CameraManager1 : MonoBehaviour
                     {
 
 
-                        Camerapairs[Isname].m_Lens.FieldOfView += 1 * Time.deltaTime * fixedRota[Isname].ZoomSpeed;
-                        Camerapairs[Isname].m_Lens.FieldOfView = Mathf.Clamp(Camerapairs[Isname].m_Lens.FieldOfView, fixedRota[Isname].Min, fixedRota[Isname].Max);
+                        Camerapairs[Isname].m_Lens.FieldOfView += 1 * Time.deltaTime * FixedZoomSpeed;
+                        Camerapairs[Isname].m_Lens.FieldOfView = Mathf.Clamp(Camerapairs[Isname].m_Lens.FieldOfView, FixedZoomMin, FixedZoomMax);
                     }
                     break;
 
@@ -616,7 +653,7 @@ public class CameraManager1 : MonoBehaviour
         }
 
     }
-    public void IsTouch()
+    private void IsTouch()
     {
         if (IsDolly)
         {
@@ -656,11 +693,11 @@ public class CameraManager1 : MonoBehaviour
         });
 
     }
-    private void CamerawindowStart()
+    private void CameraMoveFixedStart()
     {
-       FreeLookCameraRota(new Vector2(-146f, 0.5f));
+      // FreeLookCameraRota(new Vector2(-146f, 0.5f));
     }
-    private void CamerawindowEnd()
+    private void CameraMoveFixedEnd()
     {
         foreach (var item in Camerapairs)
         {

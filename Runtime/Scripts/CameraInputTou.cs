@@ -18,7 +18,10 @@ public class CameraInputTou : MonoBehaviour
         cameraData = new CameraData();
     
     }
-
+    private void Update()
+    {
+            
+    }
     public void RegistPrimaryTouchTapCallBack(Action<Vector2> vector)
     {
         cameraData.OnVariaTouchTap += vector;
@@ -63,17 +66,17 @@ public class CameraInputTou : MonoBehaviour
 }
 public class CameraData
 {
-    public delegate void RegistPrimaryTouchTap(Vector2 vector);
+    //public delegate void RegistPrimaryTouchTap(Vector2 vector);
     public event Action<Vector2> OnVariaTouchTap;
 
-    public delegate void RegistPrimaryTouchPos(Vector2 vector);
+   // public delegate void RegistPrimaryTouchPos(Vector2 vector);
     public event Action<Vector2> OnVariaTouchPos;
 
-    public delegate void RegistZoom(ZoomType zoomType);
+   // public delegate void RegistZoom(ZoomType zoomType);
     public event Action<ZoomType> OnVariaZoom;
     public event Action<float> OnvariaZoomDistance;
 
-    public delegate void RegistThreeFinger(Vector2 vector);
+   // public delegate void RegistThreeFinger(Vector2 vector);
     public event Action<Vector2> OnVariaThree;
 
     private Vector2 m_Touchpos = Vector2.zero;
@@ -97,6 +100,7 @@ public class CameraData
         {
             m_Touchpos = value;
             OnVariaTouchPos?.Invoke(m_Touchpos);
+       
         }
     }
     public ZoomType IszoomType

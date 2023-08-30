@@ -14,7 +14,9 @@ public class DollyMoveCamera : MonoBehaviour
     public Volume UIColorAdts;
     // public CinemachinePath[] startAnimPath;//备用
 
-    public int NumbersTime;
+    public float NumbersTime=10f;
+    public float StartblackTime = 0.5f;
+    public float UpdateblackTime = 0.5f;
     private int i;
     private float time;
     [HideInInspector]
@@ -38,7 +40,7 @@ public class DollyMoveCamera : MonoBehaviour
     {
      
 
-        DOTween.To(() => AColor, x => AColor = x, 0, 0.5f).OnUpdate(() =>
+        DOTween.To(() => AColor, x => AColor = x, 0, StartblackTime).OnUpdate(() =>
         {
             profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
         });
@@ -50,7 +52,7 @@ public class DollyMoveCamera : MonoBehaviour
             if (time > 1&&time<2f)
             {
             
-                DOTween.To(() => AColor, x => AColor = x, 1, 0.5f).OnUpdate(() =>
+                DOTween.To(() => AColor, x => AColor = x, 1, UpdateblackTime).OnUpdate(() =>
                 {
                     profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
                 });
@@ -72,7 +74,7 @@ public class DollyMoveCamera : MonoBehaviour
             if (time >= NumbersTime - 0.6f)
             {
            
-                DOTween.To(() => AColor, x => AColor = x, 0, 0.5f).OnUpdate(() =>
+                DOTween.To(() => AColor, x => AColor = x, 0, UpdateblackTime).OnUpdate(() =>
                 {
                     profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
                 });

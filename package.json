@@ -1,8 +1,10 @@
 {
-  "name": "com.hmi.CameraControl",
+  "name": "com.hmi.cameracontrol",
   "displayName": "CameraControl",
+  "description": "This is a multi-virtual camera control.This package depends on Ciemachine and DoTween v2, import it.Don't forget to give the main camera CinemachineBrain component.",
   "version": "1.0.0",
   "unity": "2022.3",
-  "dependencies": {"This is a multi-virtual camera control."
+  "dependencies": {
+ "com.unity.cinemachine": "2.9.7"
   }
 }
