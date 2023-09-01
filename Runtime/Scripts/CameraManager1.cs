@@ -344,7 +344,10 @@ public class CameraManager1 : MonoBehaviour
             {
                 FixedCamera = false;
                 LookCamera = false;
-                DOTween.To(() => CameraOff.m_Offset, x => CameraOff.m_Offset = x, Vector3.zero, 1f);
+                if (CameraOff!=null)
+                {
+                    DOTween.To(() => CameraOff.m_Offset, x => CameraOff.m_Offset = x, Vector3.zero, 1f);
+                }
                 OnDollyCamera?.Invoke(Bool);
                 DollyMoveCam.dollyCamera.m_Priority = 11;
                 CameraPrioritys(null, Camerapairs, freeLook, null, fixedRota, null);
