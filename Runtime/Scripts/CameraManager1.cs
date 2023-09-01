@@ -545,9 +545,12 @@ public class CameraManager1 : MonoBehaviour
 
     private void PrimaryTouchDeltaCallBack(Vector2 vector)
     {
-      
-        if (FixedCamera)
+        if (TouTapVetor.x - vector.x==0|| TouTapVetor.y - vector.y==0)
         {
+            TouchTap(vector);
+        }
+            if (FixedCamera)
+          {
             if (fixedRota[Isname].ISROTA)
             {
                
