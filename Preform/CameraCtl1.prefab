@@ -193,7 +193,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 947395028965059290}
-  m_LocalRotation: {x: 1.0307012e-17, y: -0.6704266, z: 9.312896e-18, w: 0.74197584}
+  m_LocalRotation: {x: -5.261759e-15, y: -0.6704266, z: -4.7543637e-15, w: 0.7419759}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2271,7 +2271,7 @@ MonoBehaviour:
     m_SpeedMode: 0
     m_MaxSpeed: 2
     m_AccelTime: 0.2
-    m_DecelTime: 0.1
+    m_DecelTime: 0.4
     m_InputAxisName: 
     m_InputAxisValue: 0
     m_InvertInput: 0
@@ -2295,7 +2295,7 @@ MonoBehaviour:
     m_SpeedMode: 0
     m_MaxSpeed: 300
     m_AccelTime: 0.1
-    m_DecelTime: 0.1
+    m_DecelTime: 0.2
     m_InputAxisName: 
     m_InputAxisValue: 0
     m_InvertInput: 1

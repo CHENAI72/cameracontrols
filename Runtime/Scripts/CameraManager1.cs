@@ -47,7 +47,7 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] float freeLookZoomMax = 80f;
     [SerializeField] float startBlackScreen2DTime = 0.5f;
     [SerializeField] float blackScreen2DTime = 1f;
-    [SerializeField] float freeLookDamping = 0.5f;
+ 
 
     [Header("fixedCameraInput")]
     [SerializeField] float FixedXSpeed = 0.08f;
@@ -55,14 +55,12 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] float FixedZoomSpeed = 2f;
     [SerializeField] float FixedZoomMin = 15f;
     [SerializeField] float FixedZoomMax = 40f;
-    [SerializeField] float FixedDamping = 0.1f;
     private bool IsDolly;
 
     [SerializeField] List<Transform> UI3DPos;
 
     private Vector2 TouTapVetor;
 
-  
     private void Start()
     {
         if (anchor != null)
@@ -84,6 +82,7 @@ public class CameraManager1 : MonoBehaviour
         MoveFixedCameraEnd.AddListener(CameraMoveFixedEnd);
       
     }
+
     private void OnDisable()
     {
         if (anchor != null)
@@ -498,25 +497,25 @@ public class CameraManager1 : MonoBehaviour
    
     private void TouchTap(Vector2 vector)
     {
-        float time = 0;
+      
         TouTapVetor = Vector2.zero;
         if (FixedCamera )
         {
             if (Camerapairs.Count!=0)
             {
-                if (Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue != 0 ||
-               Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue != 0)
-                {
-                    DOTween.To(() => time, x => time = x, 1, FixedDamping).OnComplete(() =>
+
+                    if (Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue != 0 ||
+                   Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue != 0)
                     {
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
                         OnFixedCamerasIsRota?.Invoke(false);
                         OnFixedCamerasBoolReversal?.Invoke(true);
                         FixedCameraRota = true;
-                    });
-                }
-              
+
+                    }
+                
+             
             }
 
          
@@ -525,18 +524,17 @@ public class CameraManager1 : MonoBehaviour
         {
             if (FreeLook!=null)
             {
-                if (FreeLook.m_XAxis.m_InputAxisValue != 0 || FreeLook.m_YAxis.m_InputAxisValue != 0)
-                {
-                    DOTween.To(() => time, x => time = x, 1, freeLookDamping).OnComplete(() =>
+
+                    if (FreeLook.m_XAxis.m_InputAxisValue != 0 || FreeLook.m_YAxis.m_InputAxisValue != 0)
                     {
-                        FreeLook.m_XAxis.m_InputAxisValue = 0;
-                        FreeLook.m_YAxis.m_InputAxisValue = 0;
-                        OnFreeLookCameraIsRota?.Invoke(false);
-                        OnFreeLookCameraBoolReversal?.Invoke(true);
-                        LookCameraRota = true;
-                    });
-                }
-               
+                    FreeLook.m_XAxis.m_InputAxisValue = 0;
+                    FreeLook.m_YAxis.m_InputAxisValue = 0;
+                    OnFreeLookCameraIsRota?.Invoke(false);
+                    OnFreeLookCameraBoolReversal?.Invoke(true);
+                    LookCameraRota = true;
+                  
+                    }
+
             }
           
           
@@ -573,6 +571,7 @@ public class CameraManager1 : MonoBehaviour
                     }
                     if (FixedCameraRota)
                     {
+                     
                         OnFixedCamerasIsRota?.Invoke(true);
                         OnFixedCamerasBoolReversal?.Invoke(false);
                           FixedCameraRota = false;
@@ -603,6 +602,7 @@ public class CameraManager1 : MonoBehaviour
                 }
                 if (LookCameraRota)
                 {
+         
                     OnFreeLookCameraIsRota?.Invoke(true);
                     OnFreeLookCameraBoolReversal?.Invoke(false);
                     LookCameraRota = false;
