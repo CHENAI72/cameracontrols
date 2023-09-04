@@ -16,7 +16,7 @@ public class DollyMoveCamera : MonoBehaviour
         public bool Isblack;
     }
    
-    public bool TheCameraOneShot = false;
+   
     public CinemachineVirtualCamera dollyCamera;
     public CinemachineDollyCart cart;
     public CinemachinePath startPath;
