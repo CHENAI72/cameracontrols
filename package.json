@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "unity": "2022.3",
   "dependencies": {
- "com.unity.cinemachine": "2.9.7"
+    "com.unity.cinemachine": "2.9.7",
+    "com.hmi.cameracontrol": "https://github.com/CHENAI72/cameracontrols.git#URP"
   }
 }
