@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class fixedCameraRota : MonoBehaviour
 {
-
+    public bool TheISRota = false;
     public bool IsTransition;
     public List<CinemachineVirtualCamera> ThisTransitionCamera;//要过渡的虚拟相机
 

@@ -561,7 +561,7 @@ public class CameraManager1 : MonoBehaviour
         }
             if (FixedCamera)
           {
-            if (fixedRota[Isname].ISROTA)
+            if (fixedRota[Isname].ISROTA&& fixedRota[Isname].TheISRota)
             {
                
                 if (TouTapVetor != Vector2.zero)
