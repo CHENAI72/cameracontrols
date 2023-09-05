@@ -55,6 +55,14 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] float FixedZoomSpeed = 2f;
     [SerializeField] float FixedZoomMin = 15f;
     [SerializeField] float FixedZoomMax = 40f;
+
+    [Header("fixedCameraRestrict")]
+    [SerializeField] bool fixedIsRota;
+    [SerializeField] float FixedRotaMinX;
+    [SerializeField] float FixedRotaMaxX;
+    [SerializeField] float FixedRotaMinY;
+    [SerializeField] float FixedRotaMaxY;
+
     private bool IsDolly;
 
     [SerializeField] List<Transform> UI3DPos;
@@ -509,7 +517,7 @@ public class CameraManager1 : MonoBehaviour
                     {
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
-                        OnFixedCamerasIsRota?.Invoke(false);
+                    OnFixedCamerasIsRota?.Invoke(false);
                         OnFixedCamerasBoolReversal?.Invoke(true);
                         FixedCameraRota = true;
 
@@ -569,6 +577,14 @@ public class CameraManager1 : MonoBehaviour
                     if (vector.y > 1f || vector.y < -1f)
                     {
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = Time.deltaTime * MoveY;
+                    }
+                    if (fixedIsRota)
+                    {
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = Mathf.Clamp(
+                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value, FixedRotaMinX, FixedRotaMaxX);
+
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = Mathf.Clamp(
+                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value, FixedRotaMinY, FixedRotaMaxY);
                     }
                     if (FixedCameraRota)
                     {
@@ -694,16 +710,16 @@ public class CameraManager1 : MonoBehaviour
         if (LookCamera)
         {
 
-            if (vector.x > 8 || vector.x < -8)
+            if (vector.x > 1 || vector.x < -1)
             {
 
-                CameraOff.m_Offset.x += vector.x / 500 * Time.deltaTime;
+                CameraOff.m_Offset.x += vector.x / 700 * Time.deltaTime;
                 CameraOff.m_Offset.x = Mathf.Clamp(CameraOff.m_Offset.x, -2f, 2f);
 
             }
-            if (vector.y > 10 || vector.y < -10)
+            if (vector.y > 1 || vector.y < -1)
             {
-               CameraOff.m_Offset.y += vector.y / 500 * Time.deltaTime;
+               CameraOff.m_Offset.y += vector.y / 700 * Time.deltaTime;
                CameraOff.m_Offset.y = Mathf.Clamp(CameraOff.m_Offset.y, -0.5f, 2f);
             }
 
