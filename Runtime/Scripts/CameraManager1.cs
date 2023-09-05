@@ -546,7 +546,7 @@ public class CameraManager1 : MonoBehaviour
 
     private void PrimaryTouchDeltaCallBack(Vector2 vector)
     {
-        Debug.Log((TouTapVetor.x - vector.x) + "dddd" + (TouTapVetor.y - vector.y));
+       
         if (TouTapVetor.x - vector.x==0&& TouTapVetor.y - vector.y==0)
         {
             TouchTap(vector);
