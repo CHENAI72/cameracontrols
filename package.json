@@ -6,6 +6,6 @@
   "unity": "2022.3",
   "dependencies": {
     "com.unity.cinemachine": "2.9.7",
-    "com.hmi.cameracontrol": "https://github.com/CHENAI72/cameracontrols.git#URP"
+    "com.mycompany.mypackage1": "https://github.com/CHENAI72/cameracontrols.git#URP"
   }
 }
