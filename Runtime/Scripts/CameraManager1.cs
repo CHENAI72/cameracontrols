@@ -36,7 +36,7 @@ public class CameraManager1 : MonoBehaviour
     private bool LookCameraRota = true;
     private bool FixedCameraRota = true;
     private bool LookCamera =true;
-    private bool FixedCamera=true;
+    private bool FixedCamera;
 
     [Header("FreelookCameraInput")]
     [SerializeField] CameraInputTou anchor;
@@ -178,6 +178,10 @@ public class CameraManager1 : MonoBehaviour
                     FalseDollyAll();
                  
                 }
+                else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne)
+                {
+                    StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
+                }
                 else
                 {
                     Camerapairs[name].Priority = 11;
@@ -230,6 +234,10 @@ public class CameraManager1 : MonoBehaviour
                               
                                 Camerapairs[name].Priority = 11;
                                 FalseDollyAll();
+                            }
+                            else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne)
+                            {
+                                StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
                             }
                             else
                             {

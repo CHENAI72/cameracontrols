@@ -8,6 +8,7 @@ public class fixedCameraRota : MonoBehaviour
 {
     public bool TheISRota = false;
     public bool IsTransition;
+    public bool IsTransitionOne;
     public float time = 0.5f;
     public List<CinemachineVirtualCamera> ThisTransitionCamera;//要过渡的虚拟相机
 
@@ -40,6 +41,14 @@ public class fixedCameraRota : MonoBehaviour
         {
             IsRota = value;
         }
+    }
+    public bool IsOne
+    {
+        get
+        {
+            return IsTransitionOne;
+        }
+      
     }
     public List<CinemachineVirtualCamera> virCamera
     {
