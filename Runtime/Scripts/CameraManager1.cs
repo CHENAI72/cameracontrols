@@ -50,8 +50,6 @@ public class CameraManager1 : MonoBehaviour
 
 
     [Header("fixedCameraInput")]
-    [SerializeField] bool InvetX;
-    [SerializeField] bool InvetY;
     [SerializeField] float FixedXSpeed = 0.08f;
     [SerializeField] float FixedYSpeed = 0.4f;
     [SerializeField] float FixedZoomSpeed = 2f;
@@ -573,28 +571,14 @@ public class CameraManager1 : MonoBehaviour
                     float MoveY = (TouTapVetor.y - vector.y) * FixedYSpeed;
                     if (vector.x > 1f || vector.x < -1f )
                     {
-                        if (InvetX)
-                        {
-                            Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = -Time.deltaTime * MoveX;
-                        }
-                        else
-                        {
+                       
                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = Time.deltaTime * MoveX;
-                        }
-                      
                      
                     }
                     if (vector.y > 1f || vector.y < -1f)
                     {
-                        if (InvetY)
-                        {
-                            Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = -Time.deltaTime * MoveY;
-                        }
-                        else
-                        {
+
                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = Time.deltaTime * MoveY;
-                        }
-                      
                     }
                     if (fixedIsRota)
                     {
