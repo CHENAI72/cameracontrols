@@ -36,7 +36,7 @@ public class CameraManager1 : MonoBehaviour
     private bool LookCameraRota = true;
     private bool FixedCameraRota = true;
     private bool LookCamera =true;
-    private bool FixedCamera;
+    private bool FixedCamera=true;
 
     [Header("FreelookCameraInput")]
     [SerializeField] CameraInputTou anchor;
@@ -169,8 +169,8 @@ public class CameraManager1 : MonoBehaviour
 
                 if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisTransitionCamera.Count != 0 && FixedCamera)
                 {
-                    StartCoroutine("IsvirCameraZhong", name);
-                   
+                    StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
+
                 }
                 else if(name.Substring(name.Length - 2, 2)=="2D"  && FixedCamera != true)
                 {
@@ -221,7 +221,7 @@ public class CameraManager1 : MonoBehaviour
                             if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisTransitionCamera.Count != 0 && FixedCamera)
                             {
 
-                                StartCoroutine("IsvirCameraZhong", name);
+                                StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
 
                             }
                             else if (name.Substring(name.Length - 2, 2) == "2D" && FixedCamera!=true)
@@ -279,11 +279,11 @@ public class CameraManager1 : MonoBehaviour
 
    
 
-    IEnumerator IsvirCameraZhong(string name)
+    IEnumerator IsvirCameraZhong(string name,float time)
     {
 
         int i = 0;
-        float time = 1f;
+        
         while (true)
         {
             Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera[i].m_Priority = 11;
@@ -293,7 +293,7 @@ public class CameraManager1 : MonoBehaviour
             if (i > Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera.Count - 1)
             {
                 Camerapairs[name].Priority = 11;
-                StopCoroutine("IsvirCameraZhong");
+                StopCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
                 break;
             }
         }
