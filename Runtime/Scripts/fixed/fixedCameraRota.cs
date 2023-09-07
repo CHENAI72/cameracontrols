@@ -6,11 +6,11 @@ using DG.Tweening;
 
 public class fixedCameraRota : MonoBehaviour
 {
-    public bool TheISRota = false;
-    public bool IsTransition;
-    public bool IsTransitionOne;
-    public float time = 0.5f;
-    public List<CinemachineVirtualCamera> ThisTransitionCamera;//要过渡的虚拟相机
+    [SerializeField] bool TheISRota = false;
+    [SerializeField] bool IsTransition;
+    [SerializeField] bool IsTransitionOne;
+    [SerializeField] List<CinemachineVirtualCamera> ThisTransitionOneCamera;
+    [SerializeField] List<CinemachineVirtualCamera> ThisTransitionCamera;//要过渡的虚拟相机
 
     private bool IsRota = false;
     private float XAxis;
@@ -30,6 +30,13 @@ public class fixedCameraRota : MonoBehaviour
             x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = x, XAxis, 0.6f);
         DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value,
             x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = x, YAxis, 0.6f);
+    }
+    public bool therota
+    {
+        get
+        {
+            return TheISRota;
+        }
     }
     public bool ISROTA
     {
@@ -53,10 +60,12 @@ public class fixedCameraRota : MonoBehaviour
     public List<CinemachineVirtualCamera> virCamera
     {
         get { return ThisTransitionCamera; }
-        set
-        {
-            ThisTransitionCamera = value;
-        }
+       
+    }
+    public List<CinemachineVirtualCamera> virOneCamera
+    {
+        get { return ThisTransitionOneCamera; }
+      
     }
     public bool ISZHONG
     {
@@ -68,18 +77,6 @@ public class fixedCameraRota : MonoBehaviour
         }
      
     }
-  public float Istime
-    {
-        get
-        {
-
-            return time;
-
-        }
-    }
-
-
-
 
 
     public float ZoomLens(float Dis,float Min,float Max)

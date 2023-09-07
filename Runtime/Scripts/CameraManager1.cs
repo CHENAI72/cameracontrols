@@ -17,6 +17,8 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
     [SerializeField] CinemachineBrain MainCamera;
 
+    private string IsEnterCamera;
+    private float CameraStartTime;
     private Vector2 CameraPos;
     private string names;
     private string Isname;
@@ -45,6 +47,7 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] float freeLookZoomSpeed = 4f;
     [SerializeField] float freeLookZoomMin = 15f;
     [SerializeField] float freeLookZoomMax = 80f;
+    [SerializeField] bool Black = false;
     [SerializeField] float startBlackScreen2DTime = 0.5f;
     [SerializeField] float blackScreen2DTime = 1f;
 
@@ -57,7 +60,7 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] float FixedZoomMax = 40f;
 
     [Header("fixedCameraRestrict")]
-    [SerializeField] bool fixedIsRota;
+    [SerializeField] bool fixedIsClamp;
     [SerializeField] float FixedRotaMinX;
     [SerializeField] float FixedRotaMaxX;
     [SerializeField] float FixedRotaMinY;
@@ -88,7 +91,7 @@ public class CameraManager1 : MonoBehaviour
         OnDollyCamera.AddListener(FreeLookCameraTransitions);
         MoveFixedCameraStart.AddListener( CameraMoveFixedStart);
         MoveFixedCameraEnd.AddListener(CameraMoveFixedEnd);
-      
+        CameraStartTime = MainCamera.m_DefaultBlend.m_Time;
     }
 
     private void OnDisable()
@@ -167,25 +170,30 @@ public class CameraManager1 : MonoBehaviour
             if (name!=Isname)
             {
 
-                if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisTransitionCamera.Count != 0 && FixedCamera)
+                if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera.Count != 0 && FixedCamera)
                 {
-                    StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
+                  
+                    StartCoroutine(IsvirCameraZhong(name, MainCamera.m_DefaultBlend.m_Time));
 
                 }
                 else if(name.Substring(name.Length - 2, 2)=="2D"  && FixedCamera != true)
                 {
+               
                     Camerapairs[name].Priority = 11;
                     FalseDollyAll();
                  
                 }
-                else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne)
+                else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne&& Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count != 0
+                     && FixedCamera != true)
                 {
-                    StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
+                   
+                    StartCoroutine(IsvirOneCamera(name, MainCamera.m_DefaultBlend.m_Time));
+                    IsEnterCamera = name;
                 }
                 else
                 {
                     Camerapairs[name].Priority = 11;
-                  
+                 
                 }
                 fixedRota[name].ISROTA = true;
                 LookCamera = false;
@@ -222,26 +230,30 @@ public class CameraManager1 : MonoBehaviour
 
                             Camerapairs.Add(name, fixedCamera[i]);
 
-                            if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ThisTransitionCamera.Count != 0 && FixedCamera)
+                            if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera.Count != 0 && FixedCamera)
                             {
-
-                                StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
+                           
+                                StartCoroutine(IsvirCameraZhong(name, MainCamera.m_DefaultBlend.m_Time));
 
                             }
                             else if (name.Substring(name.Length - 2, 2) == "2D" && FixedCamera!=true)
                             {
-                              
-                              
+
+                               
                                 Camerapairs[name].Priority = 11;
                                 FalseDollyAll();
                             }
-                            else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne)
+                            else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count!=0
+                                 && FixedCamera != true)
                             {
-                                StartCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
+                               
+                                StartCoroutine(IsvirOneCamera(name, MainCamera.m_DefaultBlend.m_Time));
+                                IsEnterCamera = name;
                             }
                             else
                             {
                                 Camerapairs[name].Priority = 11;
+                               
                             }
 
                             Isname = name;
@@ -272,7 +284,7 @@ public class CameraManager1 : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("列表没有这个名称的相机");
+                    Debug.LogError("列表没有这个名称的相机"+name);
                 }
 
             }
@@ -285,7 +297,27 @@ public class CameraManager1 : MonoBehaviour
 
     }
 
-   
+    IEnumerator IsvirOneCamera(string name, float time)
+    {
+
+        int i = 0;
+
+        while (true)
+        {
+            Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 11;
+            yield return new WaitForSeconds(time);
+            Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 10;
+            i++;
+            if (i > Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count - 1)
+            {
+                Camerapairs[name].Priority = 11;
+                StopCoroutine(IsvirOneCamera(name, MainCamera.m_DefaultBlend.m_Time));
+                break;
+            }
+        }
+
+
+    }
 
     IEnumerator IsvirCameraZhong(string name,float time)
     {
@@ -301,7 +333,7 @@ public class CameraManager1 : MonoBehaviour
             if (i > Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera.Count - 1)
             {
                 Camerapairs[name].Priority = 11;
-                StopCoroutine(IsvirCameraZhong(name, Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().Istime));
+                StopCoroutine(IsvirCameraZhong(name, MainCamera.m_DefaultBlend.m_Time));
                 break;
             }
         }
@@ -351,7 +383,7 @@ public class CameraManager1 : MonoBehaviour
     }
 
 
-    public void FreeLookCamera()
+    public void FreeLookCamera(bool value)
     {
         if (freeLook == null)
         {
@@ -359,11 +391,31 @@ public class CameraManager1 : MonoBehaviour
         }
         else
         {
-            threeCamera();
+            if (value)
+            {
+                threeCamera();
+            }
+            else
+            {
+                if (IsEnterCamera != null&&IsEnterCamera!="")
+                {
+                    StartCoroutine(IsvirBrackCamera(IsEnterCamera, MainCamera.m_DefaultBlend.m_Time));
+                }
+                else
+                {
+                   
+                    threeCamera();
+              
+                }
+            }
+            
+           
+           
         }
     }
     public void CameraHandoverTime(float time)
     {
+    
         MainCamera.m_DefaultBlend.m_Time = time;
     }
     public void DollyCamera(bool Bool)//轨道
@@ -407,18 +459,27 @@ public class CameraManager1 : MonoBehaviour
 
     private void FalseDollyAll()
     {
-         DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, startBlackScreen2DTime).OnUpdate(() =>
+        
+         CameraHandoverTime(startBlackScreen2DTime);
+        DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, startBlackScreen2DTime).OnUpdate(() =>
                 {
-
-        DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
+                    if (Black)
+                    {
+                        DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
+                    }
+       
     }).OnComplete(()=> {
 
         DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 1, blackScreen2DTime).OnUpdate(() =>
         {
-
-            DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
-        });
-
+            if (Black)
+            {
+                DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
+            }
+           
+        }).OnComplete(()=> { CameraHandoverTime(CameraStartTime); });
+       
+  
     });        
 
     }
@@ -433,14 +494,32 @@ public class CameraManager1 : MonoBehaviour
     }
     private void threeCamera()
     {
+    
+            if (freeLook.m_Priority != 11)
+            {
+                freeLook.m_Priority = 11;
+                Isname = null;
+            }
+            if (names== names.Substring(0, name.Length - 2))
+            {
+                FalseDollyAll();
+            }
+            if (DollyMoveCam != null)
+            {
+                DollyCamera(false);
+            }
+            FixedCamera = false;
+            LookCamera = true;
+            CameraPrioritys(null, Camerapairs, null, DollyMoveCam, fixedRota, null);
       
+            
+        
 
-
-        if (freeLook.m_Priority != 11)
-        {
-            freeLook.m_Priority = 11;
-            Isname = null;
-        }
+    }
+    IEnumerator IsvirBrackCamera(string name, float time)
+    {
+        
+        int i = Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count-1;
         if (DollyMoveCam != null)
         {
             DollyCamera(false);
@@ -448,6 +527,28 @@ public class CameraManager1 : MonoBehaviour
         FixedCamera = false;
         LookCamera = true;
         CameraPrioritys(null, Camerapairs, null, DollyMoveCam, fixedRota, null);
+        while (true)
+        {
+            Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 11;
+            yield return new WaitForSeconds(time);
+            Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 10;
+            i--;
+            if (i < Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count - 1)
+            {
+                
+                if (freeLook.m_Priority != 11)
+                {
+                    freeLook.m_Priority = 11;
+                    Isname = null;
+                    IsEnterCamera = null;
+                }
+               
+                StopCoroutine(IsvirBrackCamera(names,MainCamera.m_DefaultBlend.m_Time));
+                break;
+            }
+        }
+        
+
     }
     private void CameraPrioritys(string name, Dictionary<string, CinemachineVirtualCamera> valuePairs, CinemachineFreeLook freeLook, DollyMoveCamera DolllyCamera, Dictionary<string, fixedCameraRota> fixedCamera, string fixedname)
     {
@@ -584,7 +685,7 @@ public class CameraManager1 : MonoBehaviour
         }
             if (FixedCamera)
           {
-            if (fixedRota[Isname].ISROTA&& fixedRota[Isname].TheISRota)
+            if (fixedRota[Isname].ISROTA&& fixedRota[Isname].therota)
             {
                
                 if (TouTapVetor != Vector2.zero)
@@ -602,7 +703,7 @@ public class CameraManager1 : MonoBehaviour
 
                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = Time.deltaTime * MoveY;
                     }
-                    if (fixedIsRota)
+                    if (fixedIsClamp)
                     {
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = Mathf.Clamp(
                              Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value, FixedRotaMinX, FixedRotaMaxX);
@@ -723,7 +824,7 @@ public class CameraManager1 : MonoBehaviour
     {
         if (IsDolly)
         {
-            FreeLookCamera();
+           // FreeLookCamera();
 
         }
 
