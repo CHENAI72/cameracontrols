@@ -18,6 +18,7 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] CinemachineBrain MainCamera;
 
     private string IsEnterCamera;
+    private string Is2DCameraname;
     private float CameraStartTime;
     private Vector2 CameraPos;
     private string names;
@@ -109,7 +110,7 @@ public class CameraManager1 : MonoBehaviour
         MoveFixedCameraStart.RemoveListener(CameraMoveFixedStart);
         MoveFixedCameraEnd.RemoveListener(CameraMoveFixedEnd);
     }
-    public CinemachineFreeLook FreeLook
+    private CinemachineFreeLook FreeLook
     {
         get
         {
@@ -120,7 +121,7 @@ public class CameraManager1 : MonoBehaviour
             freeLook = value;
         }
     }
-    public CinemachineCameraOffset CameraOff
+    private CinemachineCameraOffset CameraOff
     {
         get
         {
@@ -178,7 +179,7 @@ public class CameraManager1 : MonoBehaviour
                 }
                 else if(name.Substring(name.Length - 2, 2)=="2D"  && FixedCamera != true)
                 {
-               
+                    Is2DCameraname = name;
                     Camerapairs[name].Priority = 11;
                     FalseDollyAll();
                  
@@ -238,9 +239,9 @@ public class CameraManager1 : MonoBehaviour
                             }
                             else if (name.Substring(name.Length - 2, 2) == "2D" && FixedCamera!=true)
                             {
-
-                               
-                                Camerapairs[name].Priority = 11;
+                                
+                                Is2DCameraname = name;
+                                 Camerapairs[name].Priority = 11;
                                 FalseDollyAll();
                             }
                             else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count!=0
@@ -494,18 +495,23 @@ public class CameraManager1 : MonoBehaviour
     }
     private void threeCamera()
     {
-    
-            if (freeLook.m_Priority != 11)
-            {
-                freeLook.m_Priority = 11;
-                Isname = null;
-            }
-        if (names != "" && names != null)
+
+       
+        if (Is2DCameraname != "" && Is2DCameraname != null)
         {
-            if (names == names.Substring(0, name.Length - 2))
+        
+            if (Is2DCameraname.Substring(Is2DCameraname.Length - 2) == "2D")
             {
+           
                 FalseDollyAll();
             }
+        }
+        if (freeLook.m_Priority != 11)
+        {
+            freeLook.m_Priority = 11;
+            Isname = null;
+            IsEnterCamera = null;
+            Is2DCameraname = null;
         }
         if (DollyMoveCam != null)
             {
@@ -544,6 +550,7 @@ public class CameraManager1 : MonoBehaviour
                     freeLook.m_Priority = 11;
                     Isname = null;
                     IsEnterCamera = null;
+                    Is2DCameraname = null;
                 }
                
                 StopCoroutine(IsvirBrackCamera(names,MainCamera.m_DefaultBlend.m_Time));
