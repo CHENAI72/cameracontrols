@@ -500,11 +500,14 @@ public class CameraManager1 : MonoBehaviour
                 freeLook.m_Priority = 11;
                 Isname = null;
             }
-            if (names== names.Substring(0, name.Length - 2))
+        if (names != "" && names != null)
+        {
+            if (names == names.Substring(0, name.Length - 2))
             {
                 FalseDollyAll();
             }
-            if (DollyMoveCam != null)
+        }
+        if (DollyMoveCam != null)
             {
                 DollyCamera(false);
             }
