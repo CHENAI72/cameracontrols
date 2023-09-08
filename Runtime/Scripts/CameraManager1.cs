@@ -416,8 +416,13 @@ public class CameraManager1 : MonoBehaviour
     }
     public void CameraHandoverTime(float time)
     {
-    
+        float time1 = 0;
         MainCamera.m_DefaultBlend.m_Time = time;
+        DOTween.To(() => time1, x => time1 = x, time1, time + 0.5f).OnComplete(()=> {
+            DOTween.To(() => MainCamera.m_DefaultBlend.m_Time, x => MainCamera.m_DefaultBlend.m_Time = x, CameraStartTime, time + 0.5f);
+        });
+       
+
     }
     public void DollyCamera(bool Bool)//轨道
     {
