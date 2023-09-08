@@ -421,7 +421,7 @@ public class CameraManager1 : MonoBehaviour
         MainCamera.m_DefaultBlend.m_Time = time;
         if (value)
         {
-            DOTween.To(() => time1, X => time1 = X, 1, time + 0.2f).OnComplete(() => {
+            DOTween.To(() => time1, X => time1 = X, 1, time + 0.04f).OnComplete(() => {
 
                 MainCamera.m_DefaultBlend.m_Time = CameraStartTime;
 
