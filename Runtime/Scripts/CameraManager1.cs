@@ -395,7 +395,7 @@ public class CameraManager1 : MonoBehaviour
         {
             if (value)
             {
-                threeCamera();
+                threeCamera(value);
             }
             else
             {
@@ -406,7 +406,7 @@ public class CameraManager1 : MonoBehaviour
                 else
                 {
                    
-                    threeCamera();
+                    threeCamera(value);
               
                 }
             }
@@ -507,16 +507,16 @@ public class CameraManager1 : MonoBehaviour
         fixedRota.Clear();
     }
 
-    private void threeCamera()
+    private void threeCamera(bool value)
     {
 
         
         if (Is2DCameraname != "" && Is2DCameraname != null)
         {
           
-            if (Is2DCameraname.Substring(Is2DCameraname.Length - 2) == "2D")
+            if (Is2DCameraname.Substring(Is2DCameraname.Length - 2) == "2D"&& value!=true)
             {
-                Debug.Log(Is2DCameraname);
+            
                 FalseDollyAll();
             }
         }
