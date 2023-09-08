@@ -892,7 +892,7 @@ public class CameraManager1 : MonoBehaviour
     {
         foreach (var item in Camerapairs)
         {
-            item.Value.m_Lens.FieldOfView = 40f;
+            //item.Value.m_Lens.FieldOfView = 40f;
 
         }
        Isname = "";
