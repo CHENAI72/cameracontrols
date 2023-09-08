@@ -179,7 +179,6 @@ public class CameraManager1 : MonoBehaviour
                 }
                 else if(name.Substring(name.Length - 2, 2)=="2D"  && FixedCamera != true)
                 {
-                    Debug.Log("hhhhhhhhhh");
                     Is2DCameraname = name;
                     Camerapairs[name].Priority = 11;
                     FalseDollyAll();
@@ -417,9 +416,8 @@ public class CameraManager1 : MonoBehaviour
     }
     public void CameraHandoverTime(float time)
     {
-     
+    
         MainCamera.m_DefaultBlend.m_Time = time;
-
     }
     public void DollyCamera(bool Bool)//轨道
     {
@@ -462,7 +460,7 @@ public class CameraManager1 : MonoBehaviour
 
     private void FalseDollyAll()
     {
-       
+        
          CameraHandoverTime(startBlackScreen2DTime);
         DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, startBlackScreen2DTime).OnUpdate(() =>
                 {
@@ -498,13 +496,13 @@ public class CameraManager1 : MonoBehaviour
     private void threeCamera()
     {
 
-        
+       
         if (Is2DCameraname != "" && Is2DCameraname != null)
         {
-          
+        
             if (Is2DCameraname.Substring(Is2DCameraname.Length - 2) == "2D")
             {
-                Debug.Log(Is2DCameraname);
+           
                 FalseDollyAll();
             }
         }
