@@ -890,11 +890,11 @@ public class CameraManager1 : MonoBehaviour
     }
     private void CameraMoveFixedEnd()
     {
-        foreach (var item in Camerapairs)
-        {
-            //item.Value.m_Lens.FieldOfView = 40f;
+        //foreach (var item in fixedRota)
+        //{
+        //    //item.Value.MoveStart();
 
-        }
+        //}
        Isname = "";
     }
 

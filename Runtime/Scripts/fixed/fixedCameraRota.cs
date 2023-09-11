@@ -15,22 +15,26 @@ public class fixedCameraRota : MonoBehaviour
     private bool IsRota = false;
     private float XAxis;
     private float YAxis;
+    private float TheFov;
     private void Awake()
     {
 
         XAxis = this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
         YAxis= this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
-
+        TheFov = this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
     }
   
     public void MoveStart()
     {
-
+ 
         DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
             x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = x, XAxis, 0.6f);
         DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value,
             x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = x, YAxis, 0.6f);
+        DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView,
+          x => this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = x, TheFov, 0.6f);
     }
+   
     public bool therota
     {
         get
