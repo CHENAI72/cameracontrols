@@ -346,7 +346,7 @@ public class CameraManager1 : MonoBehaviour
     #endregion
 
 
-    public void FreeLookCameraRotaLatency(Vector2 xy,float time)
+    public void FreeLookCameraRotaLatency(Vector2 xy,float time,float time1)
     {
         float timeValue = 0;
         if (freeLook == null)
@@ -358,11 +358,11 @@ public class CameraManager1 : MonoBehaviour
 
             DOTween.To(() => timeValue, x => timeValue = x, 1, time).OnComplete(() => {
 
-                DOTween.To(() => freeLook.m_XAxis.Value, x => freeLook.m_XAxis.Value = x, xy.x, 0.5f);
+                DOTween.To(() => freeLook.m_XAxis.Value, x => freeLook.m_XAxis.Value = x, xy.x, time1);
             });
             DOTween.To(() => timeValue, x => timeValue = x, 1, time).OnComplete(() => {
 
-                DOTween.To(() => freeLook.m_YAxis.Value, x => freeLook.m_YAxis.Value = x, xy.y, 0.5f);
+                DOTween.To(() => freeLook.m_YAxis.Value, x => freeLook.m_YAxis.Value = x, xy.y, time1);
             });
 
         }
