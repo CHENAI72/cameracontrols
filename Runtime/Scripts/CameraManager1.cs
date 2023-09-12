@@ -49,8 +49,8 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] float freeLookZoomMin = 15f;
     [SerializeField] float freeLookZoomMax = 80f;
     [SerializeField] bool Black = false;
-    [SerializeField] float startBlackScreen2DTime = 0.5f;
-    [SerializeField] float blackScreen2DTime = 1f;
+    [SerializeField] float startCameraTime = 0.5f;
+    [SerializeField] float blackCameraTime = 1f;
 
 
     [Header("fixedCameraInput")]
@@ -421,7 +421,7 @@ public class CameraManager1 : MonoBehaviour
         MainCamera.m_DefaultBlend.m_Time = time;
         if (value)
         {
-            DOTween.To(() => time1, X => time1 = X, 1, time + 0.04f).OnComplete(() => {
+            DOTween.To(() => time1, X => time1 = X, 1, blackCameraTime).OnComplete(() => {
 
                 MainCamera.m_DefaultBlend.m_Time = CameraStartTime;
 
@@ -474,8 +474,8 @@ public class CameraManager1 : MonoBehaviour
     private void FalseDollyAll()
     {
        
-         CameraHandoverTime(startBlackScreen2DTime);
-        DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, startBlackScreen2DTime).OnUpdate(() =>
+         CameraHandoverTime(startCameraTime);
+        DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, startCameraTime).OnUpdate(() =>
                 {
                     if (Black)
                     {
@@ -484,7 +484,7 @@ public class CameraManager1 : MonoBehaviour
        
     }).OnComplete(()=> {
 
-        DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 1, blackScreen2DTime).OnUpdate(() =>
+        DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 1, blackCameraTime).OnUpdate(() =>
         {
             if (Black)
             {
@@ -513,7 +513,7 @@ public class CameraManager1 : MonoBehaviour
         
         if (Is2DCameraname != "" && Is2DCameraname != null)
         {
-          
+           
             if (Is2DCameraname.Substring(Is2DCameraname.Length - 2) == "2D"&& value!=true)
             {
             
