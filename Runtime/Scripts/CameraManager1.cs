@@ -29,7 +29,7 @@ public class CameraManager1 : MonoBehaviour
     private Dictionary<string, fixedCameraRota> fixedRota = new Dictionary<string, fixedCameraRota>();
   
     public UnityEvent MoveFixedCameraStart;//进入车内
-    public UnityEvent MoveFixedCameraArrival;
+    public UnityEvent<string> MoveFixedCameraArrival;
     public UnityEvent MoveFixedCameraEnd;
     public UnityEvent<bool> OnDollyCamera;//是否在轨道移动
     public UnityEvent<bool> OnFreeLookCameraIsRota;//是否在旋转
@@ -210,7 +210,7 @@ public class CameraManager1 : MonoBehaviour
                 if (IsFixed)
                 {
                     DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() => {
-                        MoveFixedCameraArrival?.Invoke();
+                        MoveFixedCameraArrival?.Invoke(name);
                     });
                     MoveFixedCameraStart?.Invoke();
                     IsFixed = false;
@@ -267,7 +267,7 @@ public class CameraManager1 : MonoBehaviour
                             if (IsFixed)
                             {
                                 DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() => {
-                                    MoveFixedCameraArrival?.Invoke();
+                                    MoveFixedCameraArrival?.Invoke(name);
                                 });
                                 FixedCamera = true;
                                 LookCamera = false;
