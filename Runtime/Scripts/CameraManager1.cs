@@ -15,6 +15,7 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] CinemachineFreeLook freeLook;
     [SerializeField] CinemachineCameraOffset CameraOffset;//第三人称偏移
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
+    [SerializeField] List<string> OneMoveCameraEnd;
     [SerializeField] CinemachineBrain MainCamera;
 
     private string IsEnterCamera;
@@ -68,12 +69,12 @@ public class CameraManager1 : MonoBehaviour
     [SerializeField] float FixedRotaMinY;
     [SerializeField] float FixedRotaMaxY;
 
-    private bool IsDolly;
 
+  
     [SerializeField] List<Transform> UI3DPos;
 
     private Vector2 TouTapVetor;
-
+    private bool IsDolly;
     private void Start()
     {
         if (anchor != null)
@@ -94,6 +95,7 @@ public class CameraManager1 : MonoBehaviour
         MoveFixedCameraStart.AddListener( CameraMoveFixedStart);
         MoveFixedCameraEnd.AddListener(CameraMoveFixedEnd);
         CameraStartTime = MainCamera.m_DefaultBlend.m_Time;
+        
     }
 
     private void OnDisable()
@@ -142,6 +144,7 @@ public class CameraManager1 : MonoBehaviour
         }
        
     }
+
     public void FreeLookBackStartPos(float time)
     {
         if (freeLook != null)
@@ -150,6 +153,8 @@ public class CameraManager1 : MonoBehaviour
            DOTween.To(() => FreeLook.m_YAxis.Value, x => FreeLook.m_YAxis.Value = x, CameraPos.y, time);
         }
     }
+
+
 
     #region fixedCamera
     public void fixedCameraName(string name)//固定
@@ -209,9 +214,19 @@ public class CameraManager1 : MonoBehaviour
                 Isname = name;
                 if (IsFixed)
                 {
-                    DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() => {
-                        MoveFixedCameraArrival?.Invoke(name);
-                    });
+                    if (OneMoveCameraEnd.Count != 0)
+                    {
+                        for (int j = 0; j < OneMoveCameraEnd.Count; j++)
+                        {
+                            if (OneMoveCameraEnd[j] == name)
+                            {
+                                DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
+                                {
+                                    MoveFixedCameraArrival?.Invoke(name);
+                                });
+                            }
+                        }
+                    }
                     MoveFixedCameraStart?.Invoke();
                     IsFixed = false;
 
@@ -263,12 +278,23 @@ public class CameraManager1 : MonoBehaviour
                             }
 
                             Isname = name;
-                          
+                            
                             if (IsFixed)
                             {
-                                DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() => {
-                                    MoveFixedCameraArrival?.Invoke(name);
-                                });
+                                if (OneMoveCameraEnd.Count!=0)
+                                {
+                                    for (int j = 0; j < OneMoveCameraEnd.Count; j++)
+                                    {
+                                        if (OneMoveCameraEnd[j]==name)
+                                        {
+                                            DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
+                                            {
+                                                MoveFixedCameraArrival?.Invoke(name);
+                                            });
+                                        }
+                                    }
+                                }
+                                
                                 FixedCamera = true;
                                 LookCamera = false;
                                 if (CameraOff!=null)
