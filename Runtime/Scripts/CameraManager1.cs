@@ -29,6 +29,7 @@ public class CameraManager1 : MonoBehaviour
     private Dictionary<string, fixedCameraRota> fixedRota = new Dictionary<string, fixedCameraRota>();
   
     public UnityEvent MoveFixedCameraStart;//进入车内
+    public UnityEvent MoveFixedCameraArrival;
     public UnityEvent MoveFixedCameraEnd;
     public UnityEvent<bool> OnDollyCamera;//是否在轨道移动
     public UnityEvent<bool> OnFreeLookCameraIsRota;//是否在旋转
@@ -153,7 +154,7 @@ public class CameraManager1 : MonoBehaviour
     #region fixedCamera
     public void fixedCameraName(string name)//固定
     {
-
+        float time = 0;
         if (name != names)
         {
             if (DollyMoveCam != null)
@@ -166,7 +167,7 @@ public class CameraManager1 : MonoBehaviour
         }
         if (Camerapairs.ContainsKey(name))
         {
-
+         
 
             if (name!=Isname)
             {
@@ -195,7 +196,7 @@ public class CameraManager1 : MonoBehaviour
                 else
                 {
                     Camerapairs[name].Priority = 11;
-                 
+                   
                 }
                 fixedRota[name].ISROTA = true;
                 LookCamera = false;
@@ -208,6 +209,9 @@ public class CameraManager1 : MonoBehaviour
                 Isname = name;
                 if (IsFixed)
                 {
+                    DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() => {
+                        MoveFixedCameraArrival?.Invoke();
+                    });
                     MoveFixedCameraStart?.Invoke();
                     IsFixed = false;
 
@@ -255,13 +259,16 @@ public class CameraManager1 : MonoBehaviour
                             else
                             {
                                 Camerapairs[name].Priority = 11;
-                               
+                                
                             }
 
                             Isname = name;
                           
                             if (IsFixed)
                             {
+                                DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() => {
+                                    MoveFixedCameraArrival?.Invoke();
+                                });
                                 FixedCamera = true;
                                 LookCamera = false;
                                 if (CameraOff!=null)
