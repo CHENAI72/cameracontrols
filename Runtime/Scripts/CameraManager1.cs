@@ -425,6 +425,7 @@ public class CameraManager1 : MonoBehaviour
     }
     public void CameraHandoverTime(float time,bool value=false)
     {
+        Debug.Log("111hhhhh");
         float time1 = 0;
         MainCamera.m_DefaultBlend.m_Time = time;
         if (value)
