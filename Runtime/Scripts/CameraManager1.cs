@@ -240,9 +240,9 @@ public class CameraManager1 : MonoBehaviour
                             }
                             else if (name.Substring(name.Length - 2, 2) == "2D" && FixedCamera!=true)
                             {
-                                
+                            
                                 Is2DCameraname = name;
-                                 Camerapairs[name].Priority = 11;
+                                Camerapairs[name].Priority = 11;
                                 FalseDollyAll();
                             }
                             else if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().IsOne && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count!=0
@@ -396,6 +396,7 @@ public class CameraManager1 : MonoBehaviour
             if (value)
             {
                 threeCamera(value);
+              
             }
             else
             {
@@ -471,9 +472,9 @@ public class CameraManager1 : MonoBehaviour
 
     }
 
-    private void FalseDollyAll()
+    private void FalseDollyAll(bool value=false)
     {
-       
+      
          CameraHandoverTime(startCameraTime);
         DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, startCameraTime).OnUpdate(() =>
                 {
@@ -491,9 +492,16 @@ public class CameraManager1 : MonoBehaviour
                 DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
             }
            
-        }).OnComplete(()=> { CameraHandoverTime(CameraStartTime); });
-       
-  
+        }).OnComplete(()=> {
+          
+            if (Is2DCameraname.Substring(Is2DCameraname.Length - 2) != "2D")
+            {
+                CameraHandoverTime(CameraStartTime);
+            }
+           }); 
+
+
+
     });        
 
     }
@@ -509,7 +517,10 @@ public class CameraManager1 : MonoBehaviour
 
     private void threeCamera(bool value)
     {
-
+        if (value)
+        {
+            CameraHandoverTime(CameraStartTime);
+        }
         
         if (Is2DCameraname != "" && Is2DCameraname != null)
         {
@@ -517,7 +528,7 @@ public class CameraManager1 : MonoBehaviour
             if (Is2DCameraname.Substring(Is2DCameraname.Length - 2) == "2D"&& value!=true)
             {
             
-                FalseDollyAll();
+                FalseDollyAll(value);
             }
         }
         if (freeLook.m_Priority != 11)
