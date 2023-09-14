@@ -33,13 +33,13 @@ public class CameraControlV2 : MonoBehaviour
     [SerializeField] bool Black = false;
     [SerializeField] float blackCameraTime = 0.5f;//没有缓慢变黑
 
-
     [Header("fixedCameraInput")]
     [SerializeField] float FixedXSpeed = 4f;
     [SerializeField] float FixedYSpeed = 1f;
     [SerializeField] float FixedZoomSpeed = 2f;
     [SerializeField] float FixedZoomMin = 15f;
     [SerializeField] float FixedZoomMax = 40f;
+
 
     [Header("fixedCameraRestrict")]
     [SerializeField] bool fixedIsClamp;
@@ -431,7 +431,6 @@ public class CameraControlV2 : MonoBehaviour
             Isname = "";
             IsEnterCamera = "";
             IsFixed = true;
-           
             DOTween.Kill("movefixed");
             if (LookCamera!=true)
             {
@@ -577,7 +576,7 @@ public class CameraControlV2 : MonoBehaviour
                     freeLook.m_XAxis.m_InputAxisValue = 0;
                     freeLook.m_YAxis.m_InputAxisValue = 0;
                     LookCameraRota = true;
-
+                   
                 }
 
             }
@@ -588,6 +587,7 @@ public class CameraControlV2 : MonoBehaviour
 
     private void PrimaryTouchPosChange(Vector2 vector)
     {
+        
         if (TouTapVetor.x - vector.x == 0 && TouTapVetor.y - vector.y == 0)
         {
             TouchTap(vector);
@@ -599,18 +599,18 @@ public class CameraControlV2 : MonoBehaviour
 
                 if (TouTapVetor != Vector2.zero)
                 {
-                    float MoveX = (TouTapVetor.x - vector.x) * FixedXSpeed*0.08f;
-                    float MoveY = (TouTapVetor.y - vector.y) * FixedYSpeed * 0.08f;
-                    if (vector.x > 1f || vector.x < -1f)
+                    float MoveX = (TouTapVetor.x - vector.x) * FixedXSpeed*0.002f;
+                    float MoveY = (TouTapVetor.y - vector.y) * FixedYSpeed * 0.002f;
+                    if (vector.x > 0.1f || vector.x < -0.1f)
                     {
 
-                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = Time.deltaTime * MoveX;
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = MoveX;
 
                     }
-                    if (vector.y > 1f || vector.y < -1f)
+                    if (vector.y > 0.1f || vector.y < -0.1f)
                     {
 
-                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = Time.deltaTime * MoveY;
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue =  MoveY;
                     }
                     if (fixedIsClamp)
                     {
@@ -638,16 +638,16 @@ public class CameraControlV2 : MonoBehaviour
             if (TouTapVetor != Vector2.zero)
             {
 
-                float MoveX = (TouTapVetor.x - vector.x) * freeLookXSpeed *0.08f;
-                float MoveY = (TouTapVetor.y - vector.y) * freeLookYSpeed * 0.08f;
-                if (MoveX > 1f || MoveX < -1f)
+                float MoveX = (TouTapVetor.x - vector.x) * freeLookXSpeed *0.002f;
+                float MoveY = (TouTapVetor.y - vector.y) * freeLookYSpeed * 0.002f;
+                if (MoveX > 0.1f || MoveX < -0.1f)
                 {
-                    freeLook.m_XAxis.m_InputAxisValue = Time.deltaTime * MoveX;
+                    freeLook.m_XAxis.m_InputAxisValue = MoveX;
 
                 }
-                if (MoveY > 1f || MoveY < -1f)
+                if (MoveY > 0.1f || MoveY < -0.1f)
                 {
-                    freeLook.m_YAxis.m_InputAxisValue = Time.deltaTime * MoveY;
+                    freeLook.m_YAxis.m_InputAxisValue = MoveY;
 
                 }
                 if (LookCameraRota)
@@ -667,7 +667,95 @@ public class CameraControlV2 : MonoBehaviour
 
     private void PrimaryTouchDeltaCallBack(Vector2 vector)
     {
+        float timex = 0;
+        float timey = 0;
+        if (FixedCamera)
+        {
+            if (Camerapairs[Isname].GetComponent<fixedCameraRota>().ISROTA && Camerapairs[Isname].GetComponent<fixedCameraRota>().therota)
+            {
 
+
+                float MoveX = vector.x * FixedXSpeed * 0.0005f;
+                float MoveY = vector.y * FixedXSpeed * 0.0005f;
+                if (vector.x > 0.1f || vector.x < -0.1f)
+                    {
+                    DOTween.To(() => timex, x => timex = x, 1, 0.1f).OnUpdate(() => {
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue  = MoveX;
+
+                    }).OnComplete(() => {
+
+                        DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue, 
+                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = x, 0, 0.1f);
+                    });
+                    }
+
+                    if (vector.y > 0.1f || vector.y < -0.1f)
+                    {
+                    DOTween.To(() => timey, x => timey = x, 1, 0.1f).OnUpdate(() => {
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = MoveY;
+
+                    }).OnComplete(() => {
+
+                        DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue,
+                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = x, 0, 0.1f);
+                    });
+                 
+                    }
+
+                    if (fixedIsClamp)
+                    {
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = Mathf.Clamp(
+                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value, FixedRotaMinX, FixedRotaMaxX);
+
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = Mathf.Clamp(
+                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value, FixedRotaMinY, FixedRotaMaxY);
+                    }
+                    if (FixedCameraRota)
+                    {
+
+                        OnFixedCamerasRota?.Invoke();
+                        FixedCameraRota = false;
+                    }
+                
+              
+            }
+        }
+
+        if (LookCamera)
+        {
+
+                float MoveX = vector.x * freeLookXSpeed * 0.005f;
+                float MoveY = vector.y * freeLookYSpeed * 0.005f;
+                if (MoveX > 0.1f || MoveX < -0.1f)
+                {
+                DOTween.To(() => timex, x => timex = x, 1, 0.1f).OnUpdate(()=> {
+                    freeLook.m_XAxis.m_InputAxisValue = MoveX;
+
+                }).OnComplete(() => {
+                   
+                    DOTween.To(() => freeLook.m_XAxis.m_InputAxisValue, x => freeLook.m_XAxis.m_InputAxisValue = x, 0, 0.1f);
+                });
+                }
+
+                if (MoveY > 0.1f || MoveY < -0.1f)
+                {
+               
+                    DOTween.To(() => timey, x => timey = x, 1, 0.1f).OnUpdate(() => {
+                        freeLook.m_YAxis.m_InputAxisValue = MoveY;
+
+                    }).OnComplete(() => {
+
+                        DOTween.To(() => freeLook.m_YAxis.m_InputAxisValue, x => freeLook.m_YAxis.m_InputAxisValue = x, 0, 0.1f);
+                    });
+                }
+                if (LookCameraRota)
+                {
+
+                    OnFreeLookCameraRota?.Invoke();
+                    LookCameraRota = false;
+                }
+
+        }
     }
     private void ZoomCallBack(ZoomType zoom)
     {
@@ -679,7 +767,7 @@ public class CameraControlV2 : MonoBehaviour
                 case ZoomType.ZoomIn:
                     if (anchor.ZoomDistance > 0.1f)
                     {
-                        freeLook.m_Lens.FieldOfView -=  anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed;
+                        freeLook.m_Lens.FieldOfView -=  anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed*0.005f;
                         freeLook.m_Lens.FieldOfView = Mathf.Clamp(freeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
                     }
 
@@ -687,7 +775,7 @@ public class CameraControlV2 : MonoBehaviour
                 case ZoomType.ZoomOut:
                     if (anchor.ZoomDistance > 0.5f)
                     {
-                        freeLook.m_Lens.FieldOfView +=  anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed;
+                        freeLook.m_Lens.FieldOfView +=anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed*0.005f;
                         freeLook.m_Lens.FieldOfView = Mathf.Clamp(freeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
                     }
 
@@ -704,7 +792,7 @@ public class CameraControlV2 : MonoBehaviour
                 case ZoomType.ZoomIn:
                     if (anchor.ZoomDistance > 1f)
                     {
-                        Camerapairs[Isname].m_Lens.FieldOfView -= 1 * Time.deltaTime * FixedZoomSpeed;
+                        Camerapairs[Isname].m_Lens.FieldOfView -= anchor.ZoomDistance * Time.deltaTime * FixedZoomSpeed*0.005f;
                         Camerapairs[Isname].m_Lens.FieldOfView = Mathf.Clamp(Camerapairs[Isname].m_Lens.FieldOfView, FixedZoomMin, FixedZoomMax);
                     }
 
@@ -714,7 +802,7 @@ public class CameraControlV2 : MonoBehaviour
                     {
 
 
-                        Camerapairs[Isname].m_Lens.FieldOfView += 1 * Time.deltaTime * FixedZoomSpeed;
+                        Camerapairs[Isname].m_Lens.FieldOfView += anchor.ZoomDistance * Time.deltaTime * FixedZoomSpeed*0.005f;
                         Camerapairs[Isname].m_Lens.FieldOfView = Mathf.Clamp(Camerapairs[Isname].m_Lens.FieldOfView, FixedZoomMin, FixedZoomMax);
                     }
                     break;
