@@ -67,6 +67,25 @@ public class CameraControlV2 : MonoBehaviour
 
     private Vector2 TouTapVetor;
     private Dictionary<string, CinemachineVirtualCamera> Camerapairs = new Dictionary<string, CinemachineVirtualCamera>();
+    private void Awake()
+    {
+        if (freeLook != null)
+        {
+            CameraPos = new Vector2(freeLook.m_XAxis.Value, freeLook.m_YAxis.Value);
+        }
+        else
+        {
+            Debug.LogError("请添加第三人称虚拟相机");
+        }
+        if (MainCamera != null)
+        {
+            CameraStartTime = MainCamera.m_DefaultBlend.m_Time;
+        }
+        else
+        {
+            Debug.LogError("请添加虚拟主相机");
+        }
+    }
     void Start()
     {
         if (anchor != null)
@@ -78,22 +97,7 @@ public class CameraControlV2 : MonoBehaviour
             // anchor.RegistThreeFingerDeltaCallBack(ThreeFingerDelta);
             MainCamera.m_CameraActivatedEvent.AddListener(virCamerathis);
         }
-        if (freeLook != null)
-        {
-            CameraPos = new Vector2(freeLook.m_XAxis.Value, freeLook.m_YAxis.Value);
-        }
-        else
-        {
-            Debug.LogError("请添加第三人称虚拟相机");
-        }
-        if (MainCamera!=null)
-        {
-            CameraStartTime = MainCamera.m_DefaultBlend.m_Time;
-        }
-        else
-        {
-            Debug.LogError("请添加虚拟主相机");
-        }
+       
        
     }
     private void OnDisable()
