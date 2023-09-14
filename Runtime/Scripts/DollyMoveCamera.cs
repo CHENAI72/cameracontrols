@@ -46,8 +46,14 @@ public class DollyMoveCamera : MonoBehaviour
         profile = UIColorAdts.profile.components;
   
     }
-   
-
+   public void StartToggle()
+    {
+        StartCoroutine("Toggle");
+    }
+    public void StopToggle()
+    {
+        StopCoroutine("Toggle");
+    }
     IEnumerator Toggle()
     {
             cart.m_Speed = cartMoveSpeed;

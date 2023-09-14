@@ -31,7 +31,10 @@ public class CameraInputTou : MonoBehaviour
         cameraData.OnVariaTouchPos += vector;
         
     }
-
+    public void RegistPrimaryTouchDetaChange(Action<Vector2> vector)
+    {
+        cameraData.OnVariaTouchDeta += vector;
+    }
     public void RegistZoomCallBack(Action<ZoomType> Zoom)
     {
         cameraData.OnVariaZoom += Zoom;
@@ -51,6 +54,10 @@ public class CameraInputTou : MonoBehaviour
     public void UnRegistPrimaryTouchPosChange(Action<Vector2> vector)
     {
         cameraData.OnVariaTouchPos -= vector;
+    }
+    public void UnRegistPrimaryTouchDetaChange(Action<Vector2> vector)
+    {
+        cameraData.OnVariaTouchDeta -= vector;
     }
     public void UnRegistZoomCallBack(Action<ZoomType> Zoom)
     {
@@ -72,6 +79,8 @@ public class CameraData
    // public delegate void RegistPrimaryTouchPos(Vector2 vector);
     public event Action<Vector2> OnVariaTouchPos;
 
+    public event Action<Vector2> OnVariaTouchDeta;
+
    // public delegate void RegistZoom(ZoomType zoomType);
     public event Action<ZoomType> OnVariaZoom;
     public event Action<float> OnvariaZoomDistance;
@@ -80,7 +89,7 @@ public class CameraData
     public event Action<Vector2> OnVariaThree;
 
     private Vector2 m_Touchpos = Vector2.zero;
-    [SerializeField]
+    private Vector2 m_TouchDeta = Vector2.zero;
     private Vector2 m_TouchTap = Vector2.zero;
     private ZoomType m_Zoom = ZoomType.NA;
     private float m_ZoomDistance = 0f;
@@ -91,6 +100,7 @@ public class CameraData
         {
             m_TouchTap = value;
             OnVariaTouchTap?.Invoke(m_TouchTap);
+      
         }
     }
 
@@ -101,6 +111,15 @@ public class CameraData
             m_Touchpos = value;
             OnVariaTouchPos?.Invoke(m_Touchpos);
        
+        }
+    }
+    public Vector2 IsOnVariaTouchDeta
+    {
+        set
+        {
+            m_TouchDeta = value;
+            OnVariaTouchDeta?.Invoke(m_TouchDeta);
+
         }
     }
     public ZoomType IszoomType
