@@ -685,7 +685,10 @@ public class CameraControlV2 : MonoBehaviour
                     }).OnComplete(() => {
 
                         DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue, 
-                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = x, 0, 0.1f);
+                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(() => {
+                                FixedCameraRota = true;
+                            }); 
+                        FixedCameraRota = true;
                     });
                     }
 
@@ -697,7 +700,10 @@ public class CameraControlV2 : MonoBehaviour
                     }).OnComplete(() => {
 
                         DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue,
-                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = x, 0, 0.1f);
+                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(() => {
+                                FixedCameraRota = true;
+                            });
+                   
                     });
                  
                     }
@@ -733,7 +739,9 @@ public class CameraControlV2 : MonoBehaviour
 
                 }).OnComplete(() => {
                    
-                    DOTween.To(() => freeLook.m_XAxis.m_InputAxisValue, x => freeLook.m_XAxis.m_InputAxisValue = x, 0, 0.1f);
+                    DOTween.To(() => freeLook.m_XAxis.m_InputAxisValue, x => freeLook.m_XAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(()=> {
+                        LookCameraRota = true;
+                    });
                 });
                 }
 
@@ -744,8 +752,10 @@ public class CameraControlV2 : MonoBehaviour
                         freeLook.m_YAxis.m_InputAxisValue = MoveY;
 
                     }).OnComplete(() => {
-
-                        DOTween.To(() => freeLook.m_YAxis.m_InputAxisValue, x => freeLook.m_YAxis.m_InputAxisValue = x, 0, 0.1f);
+                       
+                        DOTween.To(() => freeLook.m_YAxis.m_InputAxisValue, x => freeLook.m_YAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(() => {
+                            LookCameraRota = true;
+                        });
                     });
                 }
                 if (LookCameraRota)
