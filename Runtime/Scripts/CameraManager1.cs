@@ -223,7 +223,7 @@ public class CameraManager1 : MonoBehaviour
                                 DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
                                 {
                                     MoveFixedCameraArrival?.Invoke(name);
-                                });
+                                }).SetId("movefixed");
                             }
                         }
                     }
@@ -290,7 +290,7 @@ public class CameraManager1 : MonoBehaviour
                                             DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
                                             {
                                                 MoveFixedCameraArrival?.Invoke(name);
-                                            });
+                                            }).SetId("movefixed");
                                         }
                                     }
                                 }
@@ -426,6 +426,8 @@ public class CameraManager1 : MonoBehaviour
         }
         else
         {
+            
+            DOTween.Kill("movefixed");
             if (value)
             {
                 threeCamera(value);
