@@ -160,8 +160,8 @@ public class CameraControlV2 : MonoBehaviour
     }
     #endregion
 
-    #region fixedCamera
-    public void fixedCameraName(string name,bool value=false)
+    #region FixedCamera
+    public void FixedCameraName(string name,bool value=false)
     {
         if (Camerapairs.ContainsKey(name))
         {
