@@ -226,7 +226,7 @@ public class CameraControlV2 : MonoBehaviour
   
     private void fixedMovedate(string name,bool value)
     {
-        CameraPrioritys(Camerapairs, DolllyCamera: DollyMoveCam);
+        CameraPrioritys(Camerapairs, freeLook, DolllyCamera: DollyMoveCam);
         if (value&& FixedCamera != true)
         {
             CameraHandoverTime(0);
