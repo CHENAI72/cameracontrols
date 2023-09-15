@@ -40,14 +40,6 @@ public class CameraControlV2 : MonoBehaviour
     [SerializeField] float FixedZoomMin = 15f;
     [SerializeField] float FixedZoomMax = 40f;
 
-
-    [Header("fixedCameraRestrict")]
-    [SerializeField] bool fixedIsClamp;
-    [SerializeField] float FixedRotaMinX;
-    [SerializeField] float FixedRotaMaxX;
-    [SerializeField] float FixedRotaMinY;
-    [SerializeField] float FixedRotaMaxY;
-
     [Header("DollyCameraSpeed")]
     [SerializeField] float DollyCameraSpeed=0.3f;
 
@@ -613,14 +605,7 @@ public class CameraControlV2 : MonoBehaviour
 
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue =  MoveY;
                     }
-                    if (fixedIsClamp)
-                    {
-                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = Mathf.Clamp(
-                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value, FixedRotaMinX, FixedRotaMaxX);
-
-                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = Mathf.Clamp(
-                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value, FixedRotaMinY, FixedRotaMaxY);
-                    }
+                  
                     if (FixedCameraRota)
                     {
 
@@ -709,14 +694,7 @@ public class CameraControlV2 : MonoBehaviour
                  
                     }
 
-                    if (fixedIsClamp)
-                    {
-                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = Mathf.Clamp(
-                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value, FixedRotaMinX, FixedRotaMaxX);
-
-                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = Mathf.Clamp(
-                             Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value, FixedRotaMinY, FixedRotaMaxY);
-                    }
+                  
                     if (FixedCameraRota)
                     {
 
