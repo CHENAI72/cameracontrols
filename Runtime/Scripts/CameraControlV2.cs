@@ -125,6 +125,7 @@ public class CameraControlV2 : MonoBehaviour
             float time = 0;
             if (OneMoveCameraEnd.Count != 0)
             {
+
                 for (int j = 0; j < OneMoveCameraEnd.Count; j++)
                 {
                     if (OneMoveCameraEnd[j] == camera1.Name)
@@ -132,7 +133,7 @@ public class CameraControlV2 : MonoBehaviour
                        
                         DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
                         {
-                            MoveFixedCameraArrival?.Invoke(name);
+                            MoveFixedCameraArrival?.Invoke(Isname);
                         }).SetId("movefixed");
                         IsvirArrival = false;
                        
