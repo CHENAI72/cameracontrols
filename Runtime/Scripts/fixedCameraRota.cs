@@ -7,6 +7,7 @@ using DG.Tweening;
 public class fixedCameraRota : MonoBehaviour
 {
     [SerializeField] bool TheISRota = false;
+    [SerializeField] bool TheIs2D = false;
     [SerializeField] bool IsTransition;
     [SerializeField] bool IsTransitionOne;
     [SerializeField] List<CinemachineVirtualCamera> ThisTransitionOneCamera;
@@ -82,7 +83,13 @@ public class fixedCameraRota : MonoBehaviour
      
     }
 
-
+    public bool theIs2D
+    {
+        get
+        {
+            return TheIs2D;
+        }
+    }
     public float ZoomLens(float Dis,float Min,float Max)
     {
         return Mathf.Clamp(Dis, Min, Max);

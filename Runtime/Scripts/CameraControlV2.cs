@@ -13,10 +13,9 @@ public class CameraControlV2 : MonoBehaviour
     [SerializeField] CinemachineFreeLook freeLook;
     [SerializeField] CinemachineCameraOffset CameraOffset;//第三人称偏移
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
-    [SerializeField] List<string> OneMoveCameraEnd;
     [SerializeField] CinemachineBrain MainCamera;
 
-    public UnityEvent<string> MoveFixedCameraArrival;//切换到fixedCamera
+    public UnityEvent<string> MoveCameraArrival;//切换到fixedCamera
     public UnityEvent MoveFixedCamera;//进入车内
     public UnityEvent MoveFreeLookCamera;//返回第三相机
     public UnityEvent OnDollyCamera;//是在轨道移动
@@ -111,33 +110,24 @@ public class CameraControlV2 : MonoBehaviour
 
     private void virCamerathis(ICinemachineCamera camera1,ICinemachineCamera camera2)
     {
+        float time = 0;
         if (IsvirArrival)
-        {
-            
-            float time = 0;
-            if (OneMoveCameraEnd.Count != 0)
+        {      
+            if (MainCamera.m_DefaultBlend.m_Time == 0)
             {
-
-                for (int j = 0; j < OneMoveCameraEnd.Count; j++)
-                {
-                    if (OneMoveCameraEnd[j] == camera1.Name)
-                    {
-                       
-                        DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
-                        {
-                            MoveFixedCameraArrival?.Invoke(Isname);
-                        }).SetId("movefixed");
-                        IsvirArrival = false;
-                       
-                    }
-                }
-                if (MainCamera.m_DefaultBlend.m_Time == 0)
-                {
-                    MoveFixedCameraArrival?.Invoke(name);
-                    IsvirArrival = false;
-                }
+                MoveCameraArrival?.Invoke(camera1.Name);
+                   
             }
+            else
+            {
+                DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
+                {
+                    MoveCameraArrival?.Invoke(camera1.Name);
+                }).SetId("movefixed");
+            }
+            IsvirArrival = false;
         }
+        
     }
 
     #region FreeLookCameraStartPos
@@ -236,7 +226,13 @@ public class CameraControlV2 : MonoBehaviour
         else
         {
             CameraHandoverTime(CameraStartTime);
-            if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera.Count != 0 && FixedCamera)
+            if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().theIs2D==true&& FixedCamera)//文档注意顺序
+            {
+                CameraHandoverTime(0);
+                Camerapairs[name].Priority = 11;
+                FalseDollyAll();
+            }
+            else  if (Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().ISZHONG && Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera.Count != 0 && FixedCamera)
             {
                 StartCoroutine(IsvirCameraZhong(name, MainCamera.m_DefaultBlend.m_Time));
             }
@@ -264,7 +260,7 @@ public class CameraControlV2 : MonoBehaviour
         if (IsFixed)
         {
            
-            IsvirArrival = true;
+          
             MoveFixedCamera?.Invoke();
             IsFixed = false;
         }
@@ -281,13 +277,15 @@ public class CameraControlV2 : MonoBehaviour
 
         while (true)
         {
-            Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 11;
+            IsvirArrival = true;
+               Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 11;
             yield return new WaitForSeconds(time);
             Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 10;
             i++;
             if (i > Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count - 1)
             {
                 Camerapairs[name].Priority = 11;
+                IsvirArrival = true;
                 StopCoroutine(IsvirOneCamera(name, MainCamera.m_DefaultBlend.m_Time));
                 break;
             }
@@ -302,12 +300,14 @@ public class CameraControlV2 : MonoBehaviour
 
         while (true)
         {
+            IsvirArrival = true;
             Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera[i].m_Priority = 11;
             yield return new WaitForSeconds(time);
             Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera[i].m_Priority = 10;
             i++;
             if (i > Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virCamera.Count - 1)
             {
+                IsvirArrival = true;
                 Camerapairs[name].Priority = 11;
                 StopCoroutine(IsvirCameraZhong(name, MainCamera.m_DefaultBlend.m_Time));
                 break;
@@ -424,7 +424,6 @@ public class CameraControlV2 : MonoBehaviour
             Isname = "";
             IsEnterCamera = "";
             IsFixed = true;
-            DOTween.Kill("movefixed");
             if (LookCamera!=true)
             {
                 FalseDollyAll();
@@ -445,7 +444,6 @@ public class CameraControlV2 : MonoBehaviour
         Isname = "";
         IsEnterCamera = "";
         IsFixed = true;
-        DOTween.Kill("movefixed");
         if (LookCamera != true)
         {
 
@@ -468,15 +466,16 @@ public class CameraControlV2 : MonoBehaviour
         IsFixed = true;
         Isname = "";
         IsEnterCamera = "";
-        DOTween.Kill("movefixed");
         while (true)
         {
+            IsvirArrival = true;
             Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 11;
             yield return new WaitForSeconds(time);
             Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera[i].m_Priority = 10;
             i--;
             if (i < Camerapairs[name].gameObject.GetComponent<fixedCameraRota>().virOneCamera.Count - 1)
             {
+                IsvirArrival = true;
                 freeLook.m_Priority = 11;
                 StopCoroutine(IsvirBrackCamera(names, MainCamera.m_DefaultBlend.m_Time));
                 break;
@@ -805,13 +804,24 @@ public class CameraControlV2 : MonoBehaviour
     #endregion
     private void CameraPrioritys(Dictionary<string, CinemachineVirtualCamera> CinCam=null, CinemachineFreeLook freeLook= null, DollyMoveCamera DolllyCamera =null)
     {
+        DOTween.Kill("movefixed");
+        IsvirArrival = true;
         if (CinCam.Count!=0)
         {
             foreach (var item in CinCam)
             {
                 item.Value.Priority = 10;
-                item.Value.GetComponent<fixedCameraRota>().ISROTA = false;
-                item.Value.GetComponent<fixedCameraRota>().MoveStart();
+                if (item.Value.GetComponent<fixedCameraRota>()!=null)
+                {
+                    item.Value.GetComponent<fixedCameraRota>().ISROTA = false;
+                    item.Value.GetComponent<fixedCameraRota>().MoveStart();
+                }
+                else
+                {
+                    Debug.LogError("请检查VirualFixed的" + item.Value.name + "是否挂载了fixedCameraRota组件!");
+                    break;
+                }
+                
                  
             }
           
