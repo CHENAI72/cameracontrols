@@ -50,8 +50,6 @@ public class CameraControlV2 : MonoBehaviour
     private bool dollybool;
 
     private bool IsFixed = true;
-    private bool LookCameraRota = true;
-    private bool FixedCameraRota = true;
     private bool LookCamera = true;
     private bool FixedCamera;
     private bool IsvirArrival = true;
@@ -91,6 +89,7 @@ public class CameraControlV2 : MonoBehaviour
        
        
     }
+
     private void OnDisable()
     {
         if (anchor != null)
@@ -104,8 +103,8 @@ public class CameraControlV2 : MonoBehaviour
             //anchor.UnRegistThreeFingerDeltaCallBack(ThreeFingerDelta);
             MainCamera.m_CameraActivatedEvent.RemoveListener(virCamerathis);
         }
-      
 
+        
     }
 
     private void virCamerathis(ICinemachineCamera camera1,ICinemachineCamera camera2)
@@ -543,44 +542,27 @@ public class CameraControlV2 : MonoBehaviour
         {
             if (Camerapairs.Count != 0)
             {
-
-                if (Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue != 0 ||
-               Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue != 0)
-                {
                     Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
                     Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
-                    FixedCameraRota = true;
-
-                }
-
 
             }
-
 
         }
         if (LookCamera)
         {
             if (freeLook != null)
             {
-
-                if (freeLook.m_XAxis.m_InputAxisValue != 0 || freeLook.m_YAxis.m_InputAxisValue != 0)
-                {
                     freeLook.m_XAxis.m_InputAxisValue = 0;
                     freeLook.m_YAxis.m_InputAxisValue = 0;
-                    LookCameraRota = true;
-                   
-                }
-
             }
-
 
         }
     }
-
+    
     private void PrimaryTouchPosChange(Vector2 vector)
     {
         
-        if (TouTapVetor.x - vector.x == 0 && TouTapVetor.y - vector.y == 0)
+        if (TouTapVetor.x == vector.x && TouTapVetor.y == vector.y)
         {
             TouchTap(vector);
         }
@@ -604,13 +586,7 @@ public class CameraControlV2 : MonoBehaviour
 
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue =  MoveY;
                     }
-                  
-                    if (FixedCameraRota)
-                    {
-
-                        OnFixedCamerasRota?.Invoke();
-                        FixedCameraRota = false;
-                    }
+                   OnFixedCamerasRota?.Invoke();
                 }
                 TouTapVetor = vector;
             }
@@ -618,7 +594,7 @@ public class CameraControlV2 : MonoBehaviour
 
         if (LookCamera)
         {
-
+      
 
             if (TouTapVetor != Vector2.zero)
             {
@@ -628,23 +604,17 @@ public class CameraControlV2 : MonoBehaviour
                 if (MoveX > 0.1f || MoveX < -0.1f)
                 {
                     freeLook.m_XAxis.m_InputAxisValue = MoveX;
-
+           
                 }
                 if (MoveY > 0.1f || MoveY < -0.1f)
                 {
                     freeLook.m_YAxis.m_InputAxisValue = MoveY;
-
+                
                 }
-                if (LookCameraRota)
-                {
 
-                    OnFreeLookCameraRota?.Invoke();
-                    LookCameraRota = false;
-                }
+                OnFreeLookCameraRota?.Invoke();
 
             }
-
-
             TouTapVetor = vector;
 
         }
@@ -670,10 +640,8 @@ public class CameraControlV2 : MonoBehaviour
                     }).OnComplete(() => {
 
                         DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue, 
-                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(() => {
-                                FixedCameraRota = true;
-                            }); 
-                        FixedCameraRota = true;
+                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = x, 0, 0.1f); 
+                     
                     });
                     }
 
@@ -685,23 +653,11 @@ public class CameraControlV2 : MonoBehaviour
                     }).OnComplete(() => {
 
                         DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue,
-                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(() => {
-                                FixedCameraRota = true;
-                            });
+                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = x, 0, 0.1f);
                    
                     });
-                 
                     }
-
-                  
-                    if (FixedCameraRota)
-                    {
-
                         OnFixedCamerasRota?.Invoke();
-                        FixedCameraRota = false;
-                    }
-                
-              
             }
         }
 
@@ -714,12 +670,10 @@ public class CameraControlV2 : MonoBehaviour
                 {
                 DOTween.To(() => timex, x => timex = x, 1, 0.1f).OnUpdate(()=> {
                     freeLook.m_XAxis.m_InputAxisValue = MoveX;
-
+     
                 }).OnComplete(() => {
                    
-                    DOTween.To(() => freeLook.m_XAxis.m_InputAxisValue, x => freeLook.m_XAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(()=> {
-                        LookCameraRota = true;
-                    });
+                    DOTween.To(() => freeLook.m_XAxis.m_InputAxisValue, x => freeLook.m_XAxis.m_InputAxisValue = x, 0, 0.1f);
                 });
                 }
 
@@ -728,20 +682,13 @@ public class CameraControlV2 : MonoBehaviour
                
                     DOTween.To(() => timey, x => timey = x, 1, 0.1f).OnUpdate(() => {
                         freeLook.m_YAxis.m_InputAxisValue = MoveY;
-
+                  
                     }).OnComplete(() => {
                        
-                        DOTween.To(() => freeLook.m_YAxis.m_InputAxisValue, x => freeLook.m_YAxis.m_InputAxisValue = x, 0, 0.1f).OnComplete(() => {
-                            LookCameraRota = true;
-                        });
+                        DOTween.To(() => freeLook.m_YAxis.m_InputAxisValue, x => freeLook.m_YAxis.m_InputAxisValue = x, 0, 0.1f);
                     });
                 }
-                if (LookCameraRota)
-                {
-
                     OnFreeLookCameraRota?.Invoke();
-                    LookCameraRota = false;
-                }
 
         }
     }
