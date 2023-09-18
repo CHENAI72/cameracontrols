@@ -558,13 +558,17 @@ public class CameraControlV2 : MonoBehaviour
 
         }
     }
-    
+    private void TouchTapT()
+    {
+        TouchTap(Vector2.zero);
+    }
     private void PrimaryTouchPosChange(Vector2 vector)
     {
         
         if (TouTapVetor.x == vector.x && TouTapVetor.y == vector.y)
         {
-            TouchTap(vector);
+            Invoke("TouchTapT", freeLook.m_XAxis.m_DecelTime);
+           
         }
         if (FixedCamera)
         {
