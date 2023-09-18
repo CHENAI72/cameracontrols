@@ -24,8 +24,6 @@ public class CameraControlV2 : MonoBehaviour
 
     [Header("FreelookCameraInput")]
     [SerializeField] CameraInputTou anchor;
-    [SerializeField] float freeLookXSpeed = 4f;
-    [SerializeField] float freeLookYSpeed = 1f;
     [SerializeField] float freeLookZoomSpeed = 4f;
     [SerializeField] float freeLookZoomMin = 15f;
     [SerializeField] float freeLookZoomMax = 80f;
@@ -33,8 +31,6 @@ public class CameraControlV2 : MonoBehaviour
     [SerializeField] float blackCameraTime = 0.5f;//没有缓慢变黑
 
     [Header("fixedCameraInput")]
-    [SerializeField] float FixedXSpeed = 4f;
-    [SerializeField] float FixedYSpeed = 1f;
     [SerializeField] float FixedZoomSpeed = 2f;
     [SerializeField] float FixedZoomMin = 15f;
     [SerializeField] float FixedZoomMax = 40f;
@@ -53,6 +49,8 @@ public class CameraControlV2 : MonoBehaviour
     private bool LookCamera = true;
     private bool FixedCamera;
     private bool IsvirArrival = true;
+
+
 
     private Vector2 TouTapVetor;
     private Dictionary<string, CinemachineVirtualCamera> Camerapairs = new Dictionary<string, CinemachineVirtualCamera>();
@@ -74,12 +72,13 @@ public class CameraControlV2 : MonoBehaviour
         {
             Debug.LogError("请添加虚拟主相机");
         }
+        StartCoroutine(EpicJudgment());
     }
     void Start()
     {
         if (anchor != null)
         {
-            anchor.RegistPrimaryTouchTapCallBack(TouchTap);
+         
             anchor.RegistPrimaryTouchPosChange(PrimaryTouchPosChange);
             anchor.RegistPrimaryTouchDetaChange(PrimaryTouchDeltaCallBack);
             anchor.RegistZoomCallBack(ZoomCallBack);
@@ -96,7 +95,7 @@ public class CameraControlV2 : MonoBehaviour
         {
 
 
-            anchor.UnRegistPrimaryTouchTapCallBack(TouchTap);
+           
             anchor.UnRegistPrimaryTouchPosChange(PrimaryTouchPosChange);
             anchor.UnRegistPrimaryTouchDetaChange(PrimaryTouchDeltaCallBack);
             anchor.UnRegistZoomCallBack(ZoomCallBack);
@@ -104,7 +103,7 @@ public class CameraControlV2 : MonoBehaviour
             MainCamera.m_CameraActivatedEvent.RemoveListener(virCamerathis);
         }
 
-        
+        StopCoroutine(EpicJudgment());
     }
 
     private void virCamerathis(ICinemachineCamera camera1,ICinemachineCamera camera2)
@@ -535,50 +534,20 @@ public class CameraControlV2 : MonoBehaviour
     #endregion
 
     #region ThisTouch
-    private void TouchTap(Vector2 vector)
-    {
-        TouTapVetor = Vector2.zero;
-        if (FixedCamera)
-        {
-            if (Camerapairs.Count != 0)
-            {
-                    Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
-                    Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
 
-            }
-
-        }
-        if (LookCamera)
-        {
-            if (freeLook != null)
-            {
-                    freeLook.m_XAxis.m_InputAxisValue = 0;
-                    freeLook.m_YAxis.m_InputAxisValue = 0;
-            }
-
-        }
-    }
-    private void TouchTapT()
-    {
-        TouchTap(Vector2.zero);
-    }
     private void PrimaryTouchPosChange(Vector2 vector)
     {
-        
-        if (TouTapVetor.x == vector.x && TouTapVetor.y == vector.y)
-        {
-            Invoke("TouchTapT", freeLook.m_XAxis.m_DecelTime);
-           
-        }
+
         if (FixedCamera)
         {
             if (Camerapairs[Isname].GetComponent<fixedCameraRota>().ISROTA && Camerapairs[Isname].GetComponent<fixedCameraRota>().therota)
             {
-
                 if (TouTapVetor != Vector2.zero)
                 {
-                    float MoveX = (TouTapVetor.x - vector.x) * FixedXSpeed*0.002f;
-                    float MoveY = (TouTapVetor.y - vector.y) * FixedYSpeed * 0.002f;
+
+                    float MoveX = (TouTapVetor.x - vector.x) * 0.1f;
+                    float MoveY = (TouTapVetor.y - vector.y) * 0.01f;
+
                     if (vector.x > 0.1f || vector.x < -0.1f)
                     {
 
@@ -588,10 +557,12 @@ public class CameraControlV2 : MonoBehaviour
                     if (vector.y > 0.1f || vector.y < -0.1f)
                     {
 
-                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue =  MoveY;
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = MoveY;
+                        
                     }
-                   OnFixedCamerasRota?.Invoke();
+                    OnFixedCamerasRota?.Invoke();
                 }
+                  
                 TouTapVetor = vector;
             }
         }
@@ -603,8 +574,10 @@ public class CameraControlV2 : MonoBehaviour
             if (TouTapVetor != Vector2.zero)
             {
 
-                float MoveX = (TouTapVetor.x - vector.x) * freeLookXSpeed *0.002f;
-                float MoveY = (TouTapVetor.y - vector.y) * freeLookYSpeed * 0.002f;
+              float MoveX = (TouTapVetor.x - vector.x)*0.1f;
+              float MoveY = (TouTapVetor.y - vector.y)*0.01f;
+             
+               
                 if (MoveX > 0.1f || MoveX < -0.1f)
                 {
                     freeLook.m_XAxis.m_InputAxisValue = MoveX;
@@ -633,19 +606,13 @@ public class CameraControlV2 : MonoBehaviour
             if (Camerapairs[Isname].GetComponent<fixedCameraRota>().ISROTA && Camerapairs[Isname].GetComponent<fixedCameraRota>().therota)
             {
 
-
-                float MoveX = vector.x * FixedXSpeed * 0.0005f;
-                float MoveY = vector.y * FixedXSpeed * 0.0005f;
+                float MoveX = vector.x *0.1f;
+                float MoveY = vector.y * 0.01f;
                 if (vector.x > 0.1f || vector.x < -0.1f)
                     {
                     DOTween.To(() => timex, x => timex = x, 1, 0.1f).OnUpdate(() => {
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue  = MoveX;
 
-                    }).OnComplete(() => {
-
-                        DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue, 
-                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = x, 0, 0.1f); 
-                     
                     });
                     }
 
@@ -654,30 +621,23 @@ public class CameraControlV2 : MonoBehaviour
                     DOTween.To(() => timey, x => timey = x, 1, 0.1f).OnUpdate(() => {
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = MoveY;
 
-                    }).OnComplete(() => {
-
-                        DOTween.To(() => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue,
-                            x => Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = x, 0, 0.1f);
-                   
                     });
                     }
-                        OnFixedCamerasRota?.Invoke();
+                OnFixedCamerasRota?.Invoke();
+                TouTapVetor = vector;
             }
         }
 
         if (LookCamera)
         {
 
-                float MoveX = vector.x * freeLookXSpeed * 0.005f;
-                float MoveY = vector.y * freeLookYSpeed * 0.005f;
+                float MoveX = vector.x * 0.1f;
+                float MoveY = vector.y * 0.01f;
                 if (MoveX > 0.1f || MoveX < -0.1f)
                 {
                 DOTween.To(() => timex, x => timex = x, 1, 0.1f).OnUpdate(()=> {
                     freeLook.m_XAxis.m_InputAxisValue = MoveX;
      
-                }).OnComplete(() => {
-                   
-                    DOTween.To(() => freeLook.m_XAxis.m_InputAxisValue, x => freeLook.m_XAxis.m_InputAxisValue = x, 0, 0.1f);
                 });
                 }
 
@@ -687,14 +647,12 @@ public class CameraControlV2 : MonoBehaviour
                     DOTween.To(() => timey, x => timey = x, 1, 0.1f).OnUpdate(() => {
                         freeLook.m_YAxis.m_InputAxisValue = MoveY;
                   
-                    }).OnComplete(() => {
-                       
-                        DOTween.To(() => freeLook.m_YAxis.m_InputAxisValue, x => freeLook.m_YAxis.m_InputAxisValue = x, 0, 0.1f);
                     });
                 }
                     OnFreeLookCameraRota?.Invoke();
-
+                    TouTapVetor = vector;
         }
+       
     }
     private void ZoomCallBack(ZoomType zoom)
     {
@@ -752,6 +710,40 @@ public class CameraControlV2 : MonoBehaviour
         }
     }
 
+
+    IEnumerator EpicJudgment()
+    {
+        Vector2 touValue=Vector2.zero;
+        while (true)
+        {
+            if (TouTapVetor == touValue)
+            {
+                TouTapVetor = Vector2.zero;
+                if (FixedCamera)
+                {
+                    if (Camerapairs.Count != 0)
+                    {
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
+                        Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
+
+                    }
+
+                }
+                if (LookCamera)
+                {
+                    if (freeLook != null)
+                    {
+                        freeLook.m_XAxis.m_InputAxisValue = 0;
+                        freeLook.m_YAxis.m_InputAxisValue = 0;
+                    }
+
+                }
+
+            }
+            yield return new WaitForSeconds(0.2f);
+            touValue = TouTapVetor;
+        }
+    }
     #endregion
     private void CameraPrioritys(Dictionary<string, CinemachineVirtualCamera> CinCam=null, CinemachineFreeLook freeLook= null, DollyMoveCamera DolllyCamera =null)
     {
