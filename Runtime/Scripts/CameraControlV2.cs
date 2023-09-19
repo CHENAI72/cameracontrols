@@ -15,7 +15,8 @@ public class CameraControlV2 : MonoBehaviour
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
     [SerializeField] CinemachineBrain MainCamera;
 
-    public UnityEvent<string> MoveCameraArrival;//切换到fixedCamera
+    public UnityEvent<string> StartMoveCamera;//切换开始时响应，string为上一个摄像机名称
+    public UnityEvent<string> MoveCameraArrival;//切换结束时响应，string为当前摄像机名称
     public UnityEvent MoveFixedCamera;//进入车内
     public UnityEvent MoveFreeLookCamera;//返回第三相机
     public UnityEvent OnDollyCamera;//是在轨道移动
@@ -108,6 +109,7 @@ public class CameraControlV2 : MonoBehaviour
 
     private void virCamerathis(ICinemachineCamera camera1,ICinemachineCamera camera2)
     {
+        StartMoveCamera.Invoke(camera2.Name);
         float time = 0;
         if (IsvirArrival)
         {      

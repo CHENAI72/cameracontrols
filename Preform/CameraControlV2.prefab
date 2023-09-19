@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 212653683406781498}
-  m_LocalRotation: {x: -0.043226086, y: 0.06821237, z: 0.0029582279, w: 0.9967296}
+  m_LocalRotation: {x: -0.04322609, y: 0.06821232, z: 0.0029582258, w: 0.9967296}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TheISRota: 0
+  TheIs2D: 0
   IsTransition: 0
   IsTransitionOne: 0
   ThisTransitionOneCamera: []
@@ -414,7 +415,7 @@ MonoBehaviour:
   m_VerticalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 40
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -438,7 +439,7 @@ MonoBehaviour:
   m_HorizontalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 20
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -687,6 +688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TheISRota: 0
+  TheIs2D: 0
   IsTransition: 0
   IsTransitionOne: 0
   ThisTransitionOneCamera: []
@@ -752,7 +754,7 @@ MonoBehaviour:
   m_VerticalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 40
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -776,7 +778,7 @@ MonoBehaviour:
   m_HorizontalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 20
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -1006,7 +1008,7 @@ MonoBehaviour:
   m_VerticalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 40
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -1030,7 +1032,7 @@ MonoBehaviour:
   m_HorizontalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 20
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -1169,6 +1171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TheISRota: 0
+  TheIs2D: 0
   IsTransition: 0
   IsTransitionOne: 0
   ThisTransitionOneCamera:
@@ -1294,6 +1297,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TheISRota: 0
+  TheIs2D: 0
   IsTransition: 0
   IsTransitionOne: 0
   ThisTransitionOneCamera: []
@@ -1359,7 +1363,7 @@ MonoBehaviour:
   m_VerticalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 40
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -1383,7 +1387,7 @@ MonoBehaviour:
   m_HorizontalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 20
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -1432,7 +1436,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5127310143783296207}
-  m_LocalRotation: {x: -0.04665198, y: 0.06820182, z: 0.0031926844, w: 0.9965751}
+  m_LocalRotation: {x: -0.04665198, y: 0.06820176, z: 0.0031926816, w: 0.9965751}
   m_LocalPosition: {x: -2.0756776, y: 0.5718819, z: -5.044511}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1744,7 +1748,7 @@ Transform:
   - {fileID: 5205449268084860505}
   - {fileID: 8869654110810953730}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1578934343945812410
 MonoBehaviour:
@@ -1766,9 +1770,11 @@ MonoBehaviour:
   - {fileID: 6388758853204812726}
   - {fileID: 1109604985481088962}
   - {fileID: 2261892534489131567}
-  OneMoveCameraEnd: []
   MainCamera: {fileID: 7989787705709265047}
-  MoveFixedCameraArrival:
+  StartMoveCamera:
+    m_PersistentCalls:
+      m_Calls: []
+  MoveCameraArrival:
     m_PersistentCalls:
       m_Calls: []
   MoveFixedCamera:
@@ -1787,23 +1793,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   anchor: {fileID: 5629473742781602099}
-  freeLookXSpeed: 4
-  freeLookYSpeed: 1
   freeLookZoomSpeed: 4
   freeLookZoomMin: 15
   freeLookZoomMax: 80
   Black: 1
   blackCameraTime: 1
-  FixedXSpeed: 4
-  FixedYSpeed: 1
   FixedZoomSpeed: 2
   FixedZoomMin: 15
   FixedZoomMax: 40
-  fixedIsClamp: 0
-  FixedRotaMinX: 0
-  FixedRotaMaxX: 0
-  FixedRotaMinY: 0
-  FixedRotaMaxY: 0
   DollyCameraSpeed: 0.3
 --- !u!114 &479540762385167806
 MonoBehaviour:
@@ -1932,7 +1929,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6834779215621052989}
-  m_LocalRotation: {x: -0.07175572, y: 0.06809963, z: 0.004910686, w: 0.9950826}
+  m_LocalRotation: {x: -0.07175572, y: 0.06809967, z: 0.004910689, w: 0.9950826}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2495,7 +2492,7 @@ MonoBehaviour:
   m_XAxis:
     Value: 7.83
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 40
     m_AccelTime: 0.1
     m_DecelTime: 0.2
     m_InputAxisName: 
