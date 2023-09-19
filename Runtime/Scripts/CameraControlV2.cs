@@ -20,8 +20,8 @@ public class CameraControlV2 : MonoBehaviour
     public UnityEvent MoveFixedCamera;//进入车内
     public UnityEvent MoveFreeLookCamera;//返回第三相机
     public UnityEvent OnDollyCamera;//是在轨道移动
-    public UnityEvent OnFreeLookCameraRota;//在旋转
-    public UnityEvent OnFixedCamerasRota;//在旋转
+    public UnityEvent<Vector2> OnFreeLookCameraRota;//在旋转
+    public UnityEvent<Vector2> OnFixedCamerasRota;//在旋转
 
     [Header("FreelookCameraInput")]
     [SerializeField] CameraInputTou anchor;
@@ -562,7 +562,9 @@ public class CameraControlV2 : MonoBehaviour
                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = MoveY;
                         
                     }
-                    OnFixedCamerasRota?.Invoke();
+                    OnFixedCamerasRota?.Invoke(new Vector2(Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
+                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value
+                        ));
                 }
                   
                 TouTapVetor = vector;
@@ -591,7 +593,7 @@ public class CameraControlV2 : MonoBehaviour
                 
                 }
 
-                OnFreeLookCameraRota?.Invoke();
+                OnFreeLookCameraRota?.Invoke(new Vector2(freeLook.m_XAxis.Value, freeLook.m_YAxis.Value));
 
             }
             TouTapVetor = vector;
@@ -625,7 +627,9 @@ public class CameraControlV2 : MonoBehaviour
 
                     });
                     }
-                OnFixedCamerasRota?.Invoke();
+                OnFixedCamerasRota?.Invoke(new Vector2(Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
+                         Camerapairs[Isname].GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value
+                        ));
                 TouTapVetor = vector;
             }
         }
@@ -651,8 +655,8 @@ public class CameraControlV2 : MonoBehaviour
                   
                     });
                 }
-                    OnFreeLookCameraRota?.Invoke();
-                    TouTapVetor = vector;
+            OnFreeLookCameraRota?.Invoke(new Vector2(freeLook.m_XAxis.Value, freeLook.m_YAxis.Value));
+            TouTapVetor = vector;
         }
        
     }
@@ -742,7 +746,7 @@ public class CameraControlV2 : MonoBehaviour
                 }
 
             }
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
             touValue = TouTapVetor;
         }
     }
