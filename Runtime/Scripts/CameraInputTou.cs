@@ -22,10 +22,7 @@ public class CameraInputTou : MonoBehaviour
     {
             
     }
-    public void RegistPrimaryTouchTapCallBack(Action<Vector2> vector)
-    {
-        cameraData.OnVariaTouchTap += vector;
-    }
+   
     public void RegistPrimaryTouchPosChange(Action<Vector2> vector)
     {
         cameraData.OnVariaTouchPos += vector;
@@ -39,18 +36,21 @@ public class CameraInputTou : MonoBehaviour
     {
         cameraData.OnVariaZoom += Zoom;
     }
-
+    public void RegisOnZoomDistance(Action<float> zoomDitstance)
+    {
+        cameraData.OnZoomDistance += zoomDitstance;
+    }
     public void RegistThreeFingerDeltaCallBack(Action<Vector2> vector)
     {
         cameraData.OnVariaThree += vector;
     }
 
 
-
-    public void UnRegistPrimaryTouchTapCallBack(Action<Vector2> vector)
+    public void UnRegisOnZoomDistance(Action<float> zoomDitstance)
     {
-        cameraData.OnVariaTouchTap -= vector;
+        cameraData.OnZoomDistance -= zoomDitstance;
     }
+
     public void UnRegistPrimaryTouchPosChange(Action<Vector2> vector)
     {
         cameraData.OnVariaTouchPos -= vector;
@@ -74,24 +74,18 @@ public class CameraInputTou : MonoBehaviour
 public class CameraData
 {
 
-    public event Action<Vector2> OnVariaTouchTap;
-
-
     public event Action<Vector2> OnVariaTouchPos;
-
     public event Action<Vector2> OnVariaTouchDeta;
-
-
+    public event Action<float> OnZoomDistance;
     public event Action<ZoomType> OnVariaZoom;
     public event Action<float> OnvariaZoomDistance;
-
-
     public event Action<Vector2> OnVariaThree;
 
     private Vector2 m_Touchpos = Vector2.zero;
     private Vector2 m_TouchDeta = Vector2.zero;
     private ZoomType m_Zoom = ZoomType.NA;
     private float m_ZoomDistance = 0f;
+    private float m_zoomOnDistance = 0f;
     private Vector2 m_Three = Vector2.zero;
    
 
@@ -119,6 +113,15 @@ public class CameraData
         {
             m_Zoom = value;
             OnVariaZoom?.Invoke(m_Zoom);
+        }
+    }
+    public float IsOnZoomDistance
+    {
+        set
+        {
+            m_zoomOnDistance = value;
+            OnZoomDistance?.Invoke(m_zoomOnDistance);
+
         }
     }
     public float IsZoomDistance

@@ -83,6 +83,7 @@ public class CameraControlV2 : MonoBehaviour
             anchor.RegistPrimaryTouchPosChange(PrimaryTouchPosChange);
             anchor.RegistPrimaryTouchDetaChange(PrimaryTouchDeltaCallBack);
             anchor.RegistZoomCallBack(ZoomCallBack);
+            anchor.RegisOnZoomDistance(Zoom);
             // anchor.RegistThreeFingerDeltaCallBack(ThreeFingerDelta);
             MainCamera.m_CameraActivatedEvent.AddListener(virCamerathis);
         }
@@ -100,6 +101,7 @@ public class CameraControlV2 : MonoBehaviour
             anchor.UnRegistPrimaryTouchPosChange(PrimaryTouchPosChange);
             anchor.UnRegistPrimaryTouchDetaChange(PrimaryTouchDeltaCallBack);
             anchor.UnRegistZoomCallBack(ZoomCallBack);
+            anchor.UnRegisOnZoomDistance(Zoom);
             //anchor.UnRegistThreeFingerDeltaCallBack(ThreeFingerDelta);
             MainCamera.m_CameraActivatedEvent.RemoveListener(virCamerathis);
         }
@@ -716,7 +718,21 @@ public class CameraControlV2 : MonoBehaviour
         }
     }
 
+    private void Zoom(float value)
+    {
+        
+        if (FixedCamera)
+        {
+                        Camerapairs[Isname].m_Lens.FieldOfView -= value ;
+                        Camerapairs[Isname].m_Lens.FieldOfView = Mathf.Clamp(Camerapairs[Isname].m_Lens.FieldOfView, FixedZoomMin, FixedZoomMax);
+        }
+        if (LookCamera)
+        {
 
+                        freeLook.m_Lens.FieldOfView -= value ;
+                        freeLook.m_Lens.FieldOfView = Mathf.Clamp(freeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
+        }
+    }
     IEnumerator EpicJudgment()
     {
         Vector2 touValue=Vector2.zero;
