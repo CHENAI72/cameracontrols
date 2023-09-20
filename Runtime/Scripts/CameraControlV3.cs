@@ -605,7 +605,7 @@ public class CameraControlV3 : MonoBehaviour
             {
                
                 TouTapVetor = Vector2.zero;
-                if (IsFixedCamera)
+                if (IsFixedCamera && FixedCamera.ContainsKey(Isname))
                 {
                     if (FixedCamera.Count != 0)
                     {
