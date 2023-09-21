@@ -38,6 +38,7 @@ public class CameraControlV3 : MonoBehaviour
     private bool IsFixedCamera;
     private bool IsvirArrival = true;
 
+    private string Dollyname;
     private string IsEnterCamera;
     private float CameraStartTime;
     private Vector2 CameraPos;
@@ -72,6 +73,10 @@ public class CameraControlV3 : MonoBehaviour
             {
                 FreeLook = CameraChilds[i].GetComponent<CinemachineFreeLook>();
             }
+        }
+        if (DollyMoveCam!=null)
+        {
+           Dollyname= DollyMoveCam.dollyCamera.name;
         }
       
     }
@@ -160,7 +165,7 @@ public class CameraControlV3 : MonoBehaviour
                 IsvirArrival = false;
             }
 
-            if (Endcamera.Name == "DollyCamera")
+            if (Endcamera.Name == Dollyname)
             {
                 
                 if (DollyMoveCam != null)
@@ -190,7 +195,7 @@ public class CameraControlV3 : MonoBehaviour
                     Debug.LogError("请添加DollyMoveCamera组件");
                 }
             }
-            if (Startcamera.Name == "DollyCamera")
+            if (Startcamera.Name == Dollyname)
             {
                 if (dollybool)
                 {
