@@ -14,7 +14,10 @@ public class CameraControlV2 : MonoBehaviour
     [SerializeField] CinemachineCameraOffset CameraOffset;//第三人称偏移
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
     [SerializeField] CinemachineBrain MainCamera;
+    [SerializeField] Volume UIColorAdts;
 
+    private float AColor = 1;
+    private List<VolumeComponent> profile;
     public UnityEvent<string> StartMoveCamera;//切换开始时响应，string为上一个摄像机名称
     public UnityEvent<string> MoveCameraArrival;//切换结束时响应，string为当前摄像机名称
     public UnityEvent MoveFixedCamera;//进入车内
@@ -73,6 +76,7 @@ public class CameraControlV2 : MonoBehaviour
         {
             Debug.LogError("请添加虚拟主相机");
         }
+        profile = UIColorAdts.profile.components;
         StartCoroutine(EpicJudgment());
     }
     void Start()
@@ -326,15 +330,15 @@ public class CameraControlV2 : MonoBehaviour
 
         if (Black)
         {
-            DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, 0.1f).OnUpdate(() => {
+            DOTween.To(() => AColor, x => AColor = x, 0, 0.1f).OnUpdate(() => {
 
-                DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
+                profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
 
             }).OnComplete(() => {
-                DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 1, blackCameraTime).OnUpdate(() =>
+                DOTween.To(() => DollyMoveCam.AColor, x => AColor = x, 1, blackCameraTime).OnUpdate(() =>
                 {
 
-                    DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
+                 profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor,AColor, AColor)));
 
 
                 });

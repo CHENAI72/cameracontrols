@@ -10,6 +10,10 @@ public class CameraControlV3 : MonoBehaviour
     [SerializeField] CinemachineBrain MainCamera;
     [SerializeField] CinemachineStateDrivenCamera DrivenCamera;
     [SerializeField] DollyMoveCamera DollyMoveCam;
+    [SerializeField] Volume UIColorAdts;
+
+    private float AColor = 1;
+    private List<VolumeComponent> profile;
     private CinemachineCameraOffset CameraOffset;
     private CinemachineFreeLook FreeLook;
     public UnityEvent<string> StartMoveCamera;//切换开始时响应，string为上一个摄像机名称
@@ -78,7 +82,7 @@ public class CameraControlV3 : MonoBehaviour
         {
            Dollyname= DollyMoveCam.dollyCamera.name;
         }
-      
+        profile = UIColorAdts.profile.components;
     }
     private void Start()
     {
@@ -643,15 +647,15 @@ public class CameraControlV3 : MonoBehaviour
       
         if (Black)
         {
-            DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 0, 0.1f).OnUpdate(() => {
+            DOTween.To(() => AColor, x => AColor = x, 0, 0.1f).OnUpdate(() => {
 
-                DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
+                profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
 
             }).OnComplete(() => {
-                DOTween.To(() => DollyMoveCam.AColor, x => DollyMoveCam.AColor = x, 1, blackCameraTime).OnUpdate(() =>
+                DOTween.To(() =>AColor, x => AColor = x, 1, blackCameraTime).OnUpdate(() =>
                 {
 
-                    DollyMoveCam.profile[0].parameters[2].SetValue(new ColorParameter(new Color(DollyMoveCam.AColor, DollyMoveCam.AColor, DollyMoveCam.AColor)));
+                 profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor,AColor, AColor)));
 
 
                 });

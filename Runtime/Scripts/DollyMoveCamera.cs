@@ -20,8 +20,8 @@ public class DollyMoveCamera : MonoBehaviour
     public float UpdateblackTime = 0.5f;
     private int i;
     private float time;
-    [HideInInspector]
-    public List<VolumeComponent> profile;
+
+    private List<VolumeComponent> profile;
     [HideInInspector]
     public float AColor = 1;
     // Start is called before the first frame update
