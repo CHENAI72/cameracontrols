@@ -14,7 +14,7 @@ public class CameraControlV2 : MonoBehaviour
     [SerializeField] CinemachineCameraOffset CameraOffset;//第三人称偏移
     [SerializeField] List<CinemachineVirtualCamera> fixedCamera;//固定
     [SerializeField] CinemachineBrain MainCamera;
-    [SerializeField] Volume UIColorAdts;
+    [SerializeField] Volume VolumeColor;
 
     private float AColor = 1;
     private List<VolumeComponent> profile;
@@ -76,7 +76,10 @@ public class CameraControlV2 : MonoBehaviour
         {
             Debug.LogError("请添加虚拟主相机");
         }
-        profile = UIColorAdts.profile.components;
+        if (VolumeColor!=null)
+        {
+            profile = VolumeColor.profile.components;
+        }
         StartCoroutine(EpicJudgment());
     }
     void Start()
@@ -327,24 +330,28 @@ public class CameraControlV2 : MonoBehaviour
     #region FalseDolly
     private void FalseDollyAll()
     {
-
-        if (Black)
+        if (VolumeColor != null)
         {
-            DOTween.To(() => AColor, x => AColor = x, 0, 0.1f).OnUpdate(() => {
 
-                profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
-
-            }).OnComplete(() => {
-                DOTween.To(() => DollyMoveCam.AColor, x => AColor = x, 1, blackCameraTime).OnUpdate(() =>
+            if (Black)
+            {
+                DOTween.To(() => AColor, x => AColor = x, 0, 0.1f).OnUpdate(() =>
                 {
 
-                 profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor,AColor, AColor)));
+                    profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
+
+                }).OnComplete(() =>
+                {
+                    DOTween.To(() => DollyMoveCam.AColor, x => AColor = x, 1, blackCameraTime).OnUpdate(() =>
+                    {
+
+                        profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
 
 
+                    });
                 });
-            });
 
-
+            }
         }
     }
     #endregion

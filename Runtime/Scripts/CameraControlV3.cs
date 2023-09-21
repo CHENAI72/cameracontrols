@@ -10,7 +10,7 @@ public class CameraControlV3 : MonoBehaviour
     [SerializeField] CinemachineBrain MainCamera;
     [SerializeField] CinemachineStateDrivenCamera DrivenCamera;
     [SerializeField] DollyMoveCamera DollyMoveCam;
-    [SerializeField] Volume UIColorAdts;
+    [SerializeField] Volume VolumeColor;
 
     private float AColor = 1;
     private List<VolumeComponent> profile;
@@ -82,7 +82,11 @@ public class CameraControlV3 : MonoBehaviour
         {
            Dollyname= DollyMoveCam.dollyCamera.name;
         }
-        profile = UIColorAdts.profile.components;
+        if (VolumeColor!=null)
+        {
+            profile = VolumeColor.profile.components;
+        }
+      
     }
     private void Start()
     {
@@ -647,19 +651,23 @@ public class CameraControlV3 : MonoBehaviour
       
         if (Black)
         {
-            DOTween.To(() => AColor, x => AColor = x, 0, 0.1f).OnUpdate(() => {
+            if (VolumeColor != null)
+            {
+                DOTween.To(() => AColor, x => AColor = x, 0, 0.1f).OnUpdate(() => {
 
-                profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
+                    profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
 
-            }).OnComplete(() => {
-                DOTween.To(() =>AColor, x => AColor = x, 1, blackCameraTime).OnUpdate(() =>
-                {
+                }).OnComplete(() => {
+                    DOTween.To(() => AColor, x => AColor = x, 1, blackCameraTime).OnUpdate(() =>
+                    {
 
-                 profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor,AColor, AColor)));
+                        profile[0].parameters[2].SetValue(new ColorParameter(new Color(AColor, AColor, AColor)));
 
 
+                    });
                 });
-            });
+            }
+           
 
 
         }
