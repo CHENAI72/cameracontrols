@@ -485,7 +485,7 @@ public class CameraControlV3 : MonoBehaviour
             {
 
                 float MoveX = (TouTapVetor.x - vector.x) * 0.1f;
-                float MoveY = (TouTapVetor.y - vector.y) * 0.01f;
+                float MoveY = (TouTapVetor.y - vector.y) * 0.1f;
 
 
                 if (MoveX > 0.1f || MoveX < -0.1f)
@@ -517,7 +517,7 @@ public class CameraControlV3 : MonoBehaviour
             {
 
                 float MoveX = vector.x * 0.1f;
-                float MoveY = vector.y * 0.01f;
+                float MoveY = vector.y * 0.1f;
                 if (vector.x > 0.1f || vector.x < -0.1f)
                 {
                     DOTween.To(() => timex, x => timex = x, 1, 0.1f).OnUpdate(() => {
@@ -548,7 +548,7 @@ public class CameraControlV3 : MonoBehaviour
         {
 
             float MoveX = vector.x * 0.1f;
-            float MoveY = vector.y * 0.01f;
+            float MoveY = vector.y * 0.1f;
             if (MoveX > 0.1f || MoveX < -0.1f)
             {
                 DOTween.To(() => timex, x => timex = x, 1, 0.1f).OnUpdate(() => {
@@ -586,7 +586,7 @@ public class CameraControlV3 : MonoBehaviour
 
                     break;
                 case ZoomType.ZoomOut:
-                    if (anchor.ZoomDistance > 0.5f)
+                    if (anchor.ZoomDistance > 0.1f)
                     {
                         FreeLook.m_Lens.FieldOfView += anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed * 0.005f;
                         FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
