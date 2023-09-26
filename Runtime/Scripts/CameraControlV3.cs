@@ -77,6 +77,13 @@ public class CameraControlV3 : MonoBehaviour
             {
                 FreeLook = CameraChilds[i].GetComponent<CinemachineFreeLook>();
             }
+            else if(i == CameraChilds.Length - 1)
+            {
+                LookCamera = false;
+                IsFixedCamera = true;
+                Isname = CameraChilds[0].name;
+                FixedCamera[Isname].ISROTA = true;
+            }
         }
         if (DollyMoveCam!=null)
         {
@@ -151,9 +158,11 @@ public class CameraControlV3 : MonoBehaviour
     }
     private void virCamerathis(ICinemachineCamera Endcamera, ICinemachineCamera Startcamera)
     {
+     
+
         if (Security)
         {
-
+           
             StartMoveCamera.Invoke(Startcamera.Name);
             float time = 0;
             if (IsvirArrival)
@@ -244,10 +253,10 @@ public class CameraControlV3 : MonoBehaviour
 
     private void CameraDate(string name,bool value=false)
     {
-      
+       
         if (name != Isname)
         {
-           
+            //Debug.Log(name);
             Isname = name;
             DOTween.Kill("movefixed");
             StopCoroutine(IsvirMoveCamera(names, DrivenCamera.m_DefaultBlend.m_Time));
@@ -373,9 +382,18 @@ public class CameraControlV3 : MonoBehaviour
         int i = 0;
         while (true)
         {
-      
+
             IsvirArrival = true;
-            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virOneCamera[i].name);
+            if (IsFixedCamera)
+            {
+                
+                DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virCamera[i].name);
+            }
+            else
+            {
+                DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virOneCamera[i].name);
+            }
+           
             yield return new WaitForSeconds(time);
             i++;
             if (i > FixedCamera[name].virOneCamera.Count - 1)
@@ -405,14 +423,16 @@ public class CameraControlV3 : MonoBehaviour
     #region ThisTouch
     private void PrimaryTouchPosChange(Vector2 vector)
     {
-
+      
         if (IsFixedCamera)
         {
+           
             if (FixedCamera[Isname].ISROTA && FixedCamera[Isname].therota)
             {
+               
                 if (TouTapVetor != Vector2.zero)
                 {
-
+                    
                     float MoveX = (TouTapVetor.x - vector.x) * 0.1f;
                     float MoveY = (TouTapVetor.y - vector.y) * 0.1f;
 
@@ -421,7 +441,7 @@ public class CameraControlV3 : MonoBehaviour
 
                         FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>()
                             .GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = MoveX;
-
+                    
                     }
                     if (vector.y > 0.1f || vector.y < -0.1f)
                     {
