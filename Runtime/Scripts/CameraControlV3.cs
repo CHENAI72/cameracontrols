@@ -73,19 +73,34 @@ public class CameraControlV3 : MonoBehaviour
                 CameraPos = new Vector2(CameraChilds[i].GetComponent<CinemachineFreeLook>().m_XAxis.Value,
                     CameraChilds[i].GetComponent<CinemachineFreeLook>().m_YAxis.Value);
             }
+           
+        }
+        for (int i = 0; i < CameraChilds.Length; i++)
+        {
             if (CameraChilds[i].GetComponent<CinemachineFreeLook>() != null)
             {
                 FreeLook = CameraChilds[i].GetComponent<CinemachineFreeLook>();
+                break;
             }
-            else if(i == CameraChilds.Length - 1)
+            else if (i == CameraChilds.Length - 1)
             {
+                int point = 0;
                 LookCamera = false;
                 IsFixedCamera = true;
-                Isname = CameraChilds[0].name;
+                for (int j = 0; j < CameraChilds.Length ; j++)
+                {
+                    if (CameraChilds[j].m_Priority > point)
+                    {
+                        point = j;
+                      
+                    }
+                }
+                Isname = CameraChilds[point].name;
                 FixedCamera[Isname].ISROTA = true;
+      
             }
         }
-        if (DollyMoveCam!=null)
+            if (DollyMoveCam!=null)
         {
            Dollyname= DollyMoveCam.dollyCamera.name;
         }
@@ -107,6 +122,7 @@ public class CameraControlV3 : MonoBehaviour
             // anchor.RegistThreeFingerDeltaCallBack(ThreeFingerDelta);
 
         }
+     
         MainCamera.m_CameraActivatedEvent.AddListener(virCamerathis);
         Invoke("IsSecurity", 0.2f);
         StartCoroutine(EpicJudgment());
@@ -256,7 +272,7 @@ public class CameraControlV3 : MonoBehaviour
        
         if (name != Isname)
         {
-            //Debug.Log(name);
+         
             Isname = name;
             DOTween.Kill("movefixed");
             StopCoroutine(IsvirMoveCamera(names, DrivenCamera.m_DefaultBlend.m_Time));
@@ -464,7 +480,7 @@ public class CameraControlV3 : MonoBehaviour
         if (LookCamera)
         {
 
-
+           
             if (TouTapVetor != Vector2.zero)
             {
 
@@ -475,7 +491,7 @@ public class CameraControlV3 : MonoBehaviour
                 if (MoveX > 0.1f || MoveX < -0.1f)
                 {
                     FreeLook.m_XAxis.m_InputAxisValue = MoveX;
-
+                
                 }
                 if (MoveY > 0.1f || MoveY < -0.1f)
                 {
