@@ -5,12 +5,16 @@ using Cinemachine;
 using DG.Tweening;
 using UnityEngine.Rendering;
 using UnityEngine.Events;
+using System;
 public class CameraControlV3 : MonoBehaviour
 {
     [SerializeField] CinemachineBrain MainCamera;
     [SerializeField] CinemachineStateDrivenCamera DrivenCamera;
     [SerializeField] DollyMoveCamera DollyMoveCam;
     [SerializeField] Volume VolumeColor;
+
+    private CinemachineBlenderSettings.CustomBlend[] customBlend;
+
 
     private float AColor = 1;
     private List<VolumeComponent> profile;
@@ -44,7 +48,12 @@ public class CameraControlV3 : MonoBehaviour
 
     private string Dollyname;
     private string IsEnterCamera;
+
     private float CameraStartTime;
+    private Vector3 CameraStartVextor;
+    private bool IsPos;
+    private string EndCamera;
+
     private Vector2 CameraPos;
     private string names;
     private string Isname;
@@ -59,8 +68,14 @@ public class CameraControlV3 : MonoBehaviour
     #region StartData
     private void Awake()
     {
+        if (DrivenCamera.m_CustomBlends != null)
+        {
+            customBlend = DrivenCamera.m_CustomBlends.m_CustomBlends;
+
+        }
+         CameraStartTime = DrivenCamera.m_DefaultBlend.m_Time;
+        CameraStartVextor = MainCamera.transform.position;
         CameraChilds = DrivenCamera.ChildCameras;
-        CameraStartTime = DrivenCamera.m_DefaultBlend.m_Time;
         for (int i = 0; i < CameraChilds.Length; i++)
         {
             if (CameraChilds[i].GetComponent<fixedCameraRota>()!=null)
@@ -108,7 +123,9 @@ public class CameraControlV3 : MonoBehaviour
         {
             profile = VolumeColor.profile.components;
         }
-      
+
+   
+
     }
     private void Start()
     {
@@ -124,6 +141,9 @@ public class CameraControlV3 : MonoBehaviour
         }
      
         MainCamera.m_CameraActivatedEvent.AddListener(virCamerathis);
+
+        //StartMoveCamera.AddListener(StartCameraName);
+
         Invoke("IsSecurity", 0.2f);
         StartCoroutine(EpicJudgment());
     }
@@ -142,10 +162,12 @@ public class CameraControlV3 : MonoBehaviour
 
         }
         MainCamera.m_CameraActivatedEvent.RemoveListener(virCamerathis);
+   
         StopCoroutine(EpicJudgment());
     }
     #endregion
 
+   
 
     #region FreeLookCameraStartPos
     public void FreeLookCameraPosSave()
@@ -172,31 +194,36 @@ public class CameraControlV3 : MonoBehaviour
     {
         Security = true;
     }
+ 
     private void virCamerathis(ICinemachineCamera Endcamera, ICinemachineCamera Startcamera)
     {
-     
+       
 
         if (Security)
         {
-           
+         
             StartMoveCamera.Invoke(Startcamera.Name);
-            float time = 0;
-            if (IsvirArrival)
-            {
-                if (DrivenCamera.m_DefaultBlend.m_Time == 0)
-                {
-                    MoveCameraArrival?.Invoke(Endcamera.Name);
+            EndCamera = Endcamera.Name;
+            IsPos = true;
+            //float time = 0;
+            //if (IsvirArrival && customBlend == null)
+            //{
+            //    if (DrivenCamera.m_DefaultBlend.m_Time == 0 && customBlend == null)
+            //    {
+            //        MoveCameraArrival?.Invoke(Endcamera.Name);
 
-                }
-                else
-                {
-                    DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
-                    {
-                        MoveCameraArrival?.Invoke(Endcamera.Name);
-                    }).SetId("movefixed");
-                }
-                IsvirArrival = false;
-            }
+            //    }
+            //    else
+            //    {
+            //        DOTween.To(() => time, x => time = x, 1, CameraStartTime).OnComplete(() =>
+            //        {
+            //            MoveCameraArrival?.Invoke(Endcamera.Name);
+
+            //        }).SetId("movefixed");
+            //    }
+            //    IsvirArrival = false;
+            //}
+
 
             if (Endcamera.Name == Dollyname)
             {
@@ -646,6 +673,7 @@ public class CameraControlV3 : MonoBehaviour
     }
     IEnumerator EpicJudgment()
     {
+        Vector3 Cameravector = Vector3.zero;
         Vector2 touValue = Vector2.zero;
         while (true)
         {
@@ -675,8 +703,21 @@ public class CameraControlV3 : MonoBehaviour
                 }
 
             }
+           
+            CameraStartVextor = MainCamera.transform.position;
+             yield return null;
+            if (Cameravector == CameraStartVextor)
+            {
+                if (IsPos)
+                {
+                    CameraStartVextor = Vector3.zero;
+                    MoveCameraArrival?.Invoke(EndCamera);
+                    IsPos = false;
+                }
+            }
             yield return new WaitForSeconds(0.1f);
             touValue = TouTapVetor;
+            Cameravector = CameraStartVextor;
         }
     }
     #endregion
