@@ -201,9 +201,9 @@ public class CameraControlV3 : MonoBehaviour
 
         if (Security)
         {
-         
+           
             StartMoveCamera.Invoke(Startcamera.Name);
-            EndCamera = Endcamera.Name;
+            EndCamera = DrivenCamera.LiveChild.Name;
             IsPos = true;
             //float time = 0;
             //if (IsvirArrival && customBlend == null)
