@@ -58,6 +58,7 @@ public class CameraControlV3 : MonoBehaviour
     private string names;
     private string Isname;
     private bool dollybool;
+    private bool CamIsBlending;
 
     private bool Security;//保护
     private Vector2 TouTapVetor;
@@ -673,7 +674,7 @@ public class CameraControlV3 : MonoBehaviour
     }
     IEnumerator EpicJudgment()
     {
-        Vector3 Cameravector = Vector3.zero;
+       // Vector3 Cameravector = Vector3.zero;
         Vector2 touValue = Vector2.zero;
         while (true)
         {
@@ -704,20 +705,20 @@ public class CameraControlV3 : MonoBehaviour
 
             }
            
-            CameraStartVextor = MainCamera.transform.position;
+        
              yield return null;
-            if (Cameravector == CameraStartVextor)
+           
+            if (CamIsBlending != DrivenCamera.IsBlending)
             {
-                if (IsPos)
+                if (CamIsBlending)
                 {
-                    CameraStartVextor = Vector3.zero;
                     MoveCameraArrival?.Invoke(EndCamera);
-                    IsPos = false;
                 }
+                CamIsBlending = DrivenCamera.IsBlending;
             }
             yield return new WaitForSeconds(0.1f);
             touValue = TouTapVetor;
-            Cameravector = CameraStartVextor;
+          
         }
     }
     #endregion
