@@ -713,6 +713,7 @@ public class CameraControlV3 : MonoBehaviour
                 if (CamIsBlending)
                 {
                     MoveCameraArrival?.Invoke(EndCamera);
+                    EndCamera = "";
                 }
                 CamIsBlending = DrivenCamera.IsBlending;
             }
