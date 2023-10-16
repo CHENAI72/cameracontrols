@@ -61,7 +61,7 @@ public class CameraControlV3 : MonoBehaviour
 
     private bool Security;//保护
     private Vector2 TouTapVetor;
-    private List<CinemachineVirtualCameraBase> CameraChilds;
+    private List<CinemachineVirtualCameraBase> CameraChilds=new List<CinemachineVirtualCameraBase>();
     private Dictionary<string, fixedCameraRota> FixedCamera = new Dictionary<string, fixedCameraRota>();
     // Start is called before the first frame update
 
