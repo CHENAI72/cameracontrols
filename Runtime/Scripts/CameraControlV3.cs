@@ -351,7 +351,7 @@ public class CameraControlV3 : MonoBehaviour
                 }
                 else
                 {
-                    if (IsEnterCamera != null && IsEnterCamera != "")
+                    if (IsEnterCamera != null && IsEnterCamera != ""&& FixedCamera[IsEnterCamera].IsBreakMoveTransition)
                     {
                         StartCoroutine(IsvirMoveCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
                     }

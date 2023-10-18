@@ -6,8 +6,10 @@ using DG.Tweening;
 
 public class fixedCameraRota : MonoBehaviour
 {
+
     [SerializeField] bool TheISRota = false;
     [SerializeField] bool TheIs2D = false;
+    [SerializeField] bool BreakMoveTransition;
     [SerializeField] bool IsTransition;
     [SerializeField] bool IsTransitionOne;
     [SerializeField] List<CinemachineVirtualCamera> ThisTransitionOneCamera;
@@ -53,6 +55,10 @@ public class fixedCameraRota : MonoBehaviour
         {
             IsRota = value;
         }
+    }
+    public bool IsBreakMoveTransition
+    {
+        get { return BreakMoveTransition; }
     }
     public bool IsOne
     {
