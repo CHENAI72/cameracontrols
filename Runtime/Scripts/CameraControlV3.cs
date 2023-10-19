@@ -207,7 +207,7 @@ public class CameraControlV3 : MonoBehaviour
         {
            
             StartMoveCamera.Invoke(Startcamera.Name);
-       
+  
             EndCamera = Endcamera.Name;
             //if (Startcamera.Name == this.name)
             //{
