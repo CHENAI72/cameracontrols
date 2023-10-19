@@ -50,7 +50,7 @@ public class CameraControlV3 : MonoBehaviour
     private string IsEnterCamera;
 
     private float CameraStartTime;
-
+    private string StartCamera;
     private string EndCamera;
 
     private Vector2 CameraPos;
@@ -207,6 +207,7 @@ public class CameraControlV3 : MonoBehaviour
         {
            
             StartMoveCamera.Invoke(Startcamera.Name);
+            StartCamera = Startcamera.Name;
             EndCamera = Endcamera.Name;
             //if (Startcamera.Name == this.name)
             //{
@@ -351,23 +352,32 @@ public class CameraControlV3 : MonoBehaviour
                 }
                 else
                 {
-                    if (IsEnterCamera != null && IsEnterCamera != ""&& FixedCamera[IsEnterCamera].IsBreakMoveTransition)
+                    if (FixedCamera.ContainsKey(StartCamera))
                     {
-                        StartCoroutine(IsvirMoveCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
+                        if (IsEnterCamera != null && IsEnterCamera != "" && FixedCamera[StartCamera].IsBreakMoveTransition)
+                        {
+                            Debug.Log(IsEnterCamera);
+                            StartCoroutine(IsvirMoveCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
+                        }
+                        else
+                        {
+                            MoveCamera(name);
+                           
+                        }
                     }
                     else
                     {
                         MoveCamera(name);
-                  
+                       
                     }
-                   
+
                 }
             }
         }
     }
     private void MoveCamera(string name,bool value=false)//非固定相机
     {
-        
+
         if (value)
         {
             CameraHandoverTime(0);
@@ -409,6 +419,7 @@ public class CameraControlV3 : MonoBehaviour
     }
     IEnumerator IsvirCamera(string name,float time)
     {
+        
         int i = 0;
         while (true)
         {
@@ -454,7 +465,7 @@ public class CameraControlV3 : MonoBehaviour
     private void PrimaryTouchPosChange(Vector2 vector)
     {
       
-        if (IsFixedCamera)
+        if (IsFixedCamera&& FixedCamera.ContainsKey(Isname))
         {
            
             if (FixedCamera[Isname].ISROTA && FixedCamera[Isname].therota)
