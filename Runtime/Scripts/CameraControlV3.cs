@@ -352,19 +352,23 @@ public class CameraControlV3 : MonoBehaviour
                 }
                 else
                 {
-                    
+                    Debug.Log(DrivenCamera.LiveChild.Name);
                     if (FixedCamera.ContainsKey(DrivenCamera.LiveChild.Name))
                     {
                         
                         if (IsEnterCamera != null && IsEnterCamera != "" && FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
                         {
-                            Debug.Log(IsEnterCamera);
+                      
                             StartCoroutine(IsvirMoveCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
+                        }
+                        else if (IsEnterCamera == null || IsEnterCamera == "" && FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
+                        {
+                            StartCoroutine(IsvirbrackMoveCamera(DrivenCamera.LiveChild.Name, DrivenCamera.m_DefaultBlend.m_Time));
                         }
                         else
                         {
                             MoveCamera(name);
-                            
+                           
                         }
                     }
                     else
@@ -394,6 +398,30 @@ public class CameraControlV3 : MonoBehaviour
         IsEnterCamera = "";
         IsFixedCamera = false;
         LookCamera = true;
+    }
+    IEnumerator IsvirbrackMoveCamera(string name, float time)
+    {
+
+        int i = FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera.Count - 1;
+        CameraHandoverTime(CameraStartTime);
+        while (true)
+        {
+
+            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera[i].name);
+            yield return new WaitForSeconds(time);
+            i--;
+            if (i < 0)
+            {
+
+                IsEnterCamera = "";
+                IsFixedCamera = false;
+                LookCamera = true;
+
+                DrivenCamera.m_AnimatedTarget.Play(name);
+                StopCoroutine(IsvirMoveCamera(names, DrivenCamera.m_DefaultBlend.m_Time));
+                break;
+            }
+        }
     }
     IEnumerator IsvirMoveCamera(string name,float time)
     {
