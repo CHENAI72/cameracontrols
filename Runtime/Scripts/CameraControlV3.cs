@@ -50,7 +50,7 @@ public class CameraControlV3 : MonoBehaviour
     private string IsEnterCamera;
 
     private float CameraStartTime;
-    private string StartCamera;
+
     private string EndCamera;
 
     private Vector2 CameraPos;
@@ -207,7 +207,7 @@ public class CameraControlV3 : MonoBehaviour
         {
            
             StartMoveCamera.Invoke(Startcamera.Name);
-            StartCamera = Startcamera.Name;
+       
             EndCamera = Endcamera.Name;
             //if (Startcamera.Name == this.name)
             //{
@@ -352,7 +352,7 @@ public class CameraControlV3 : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log(DrivenCamera.LiveChild.Name);
+                    
                     if (FixedCamera.ContainsKey(DrivenCamera.LiveChild.Name))
                     {
                         
