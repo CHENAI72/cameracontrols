@@ -352,9 +352,11 @@ public class CameraControlV3 : MonoBehaviour
                 }
                 else
                 {
-                    if (FixedCamera.ContainsKey(StartCamera))
+                    Debug.Log(DrivenCamera.LiveChild.Name);
+                    if (FixedCamera.ContainsKey(DrivenCamera.LiveChild.Name))
                     {
-                        if (IsEnterCamera != null && IsEnterCamera != "" && FixedCamera[StartCamera].IsBreakMoveTransition)
+                        
+                        if (IsEnterCamera != null && IsEnterCamera != "" && FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
                         {
                             Debug.Log(IsEnterCamera);
                             StartCoroutine(IsvirMoveCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
@@ -362,7 +364,7 @@ public class CameraControlV3 : MonoBehaviour
                         else
                         {
                             MoveCamera(name);
-                           
+                            
                         }
                     }
                     else
@@ -532,7 +534,7 @@ public class CameraControlV3 : MonoBehaviour
     {
         float timex = 0;
         float timey = 0;
-        if (IsFixedCamera)
+        if (IsFixedCamera && FixedCamera.ContainsKey(Isname))
         {
             if (FixedCamera[Isname].ISROTA && FixedCamera[Isname].therota)
             {
