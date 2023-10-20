@@ -410,6 +410,7 @@ public class CameraControlV3 : MonoBehaviour
         
         int i = FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera.Count-1 ;
         DrivenCamera.m_AnimatedTarget.Play(FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera[i].name);
+        yield return null;
         CameraHandoverTime(CameraStartTime);
         while (true)
         {
@@ -446,10 +447,12 @@ public class CameraControlV3 : MonoBehaviour
         if (IsFixedCamera)
         {
             DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virCamera[i].name);
+            yield return null;
         }
         else
         {
             DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virOneCamera[i].name);
+            yield return null;
         }
        
         while (true)
@@ -466,7 +469,7 @@ public class CameraControlV3 : MonoBehaviour
                     {
                         //有问题
                        
-                        yield return null;
+                  
                         i++;
                         if (i >FixedCamera[name].virCamera.Count-1 )
                         {
