@@ -290,9 +290,9 @@ public class CameraControlV3 : MonoBehaviour
         {
          
             Isname = name;
-            StopAllCoroutines();
-            //StopCoroutine(IsvirMoveCamera(names));
-            //StopCoroutine(IsvirCamera(name));
+            //StopAllCoroutines();
+            StopCoroutine(IsvirMoveCamera(names));
+            StopCoroutine(IsvirCamera(name));
             if (FixedCamera.ContainsKey(name))
             {
                 
