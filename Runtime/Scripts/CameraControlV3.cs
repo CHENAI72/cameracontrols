@@ -290,8 +290,9 @@ public class CameraControlV3 : MonoBehaviour
         {
          
             Isname = name;
-            StopCoroutine(IsvirMoveCamera(names));
-            StopCoroutine(IsvirCamera(name));
+            StopAllCoroutines();
+            //StopCoroutine(IsvirMoveCamera(names));
+            //StopCoroutine(IsvirCamera(name));
             if (FixedCamera.ContainsKey(name))
             {
                 
@@ -373,8 +374,15 @@ public class CameraControlV3 : MonoBehaviour
                         }
                         else
                         {
-                           
+                            //if (FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
+                            //{
+                            //    StartCoroutine(IsvirMoveTransition(name));
+                            //}
+                            //else
+                            //{
                                 MoveCamera(name);
+                           // }
+                             
                             
                           
                           
@@ -454,6 +462,13 @@ public class CameraControlV3 : MonoBehaviour
           
         }
     }
+
+
+    //IEnumerator IsvirMoveTransition(string name)
+    //{
+
+    //}
+
     bool Blending;
     IEnumerator IsvirCamera(string name)
     {
