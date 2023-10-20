@@ -367,19 +367,20 @@ public class CameraControlV3 : MonoBehaviour
                             else
                             {
                                 MoveCamera(name);
+                               
                             }
                             
                         }
                         else
                         {
                             MoveCamera(name);
-                           
+                          
                         }
                     }
                     else
                     {
                         MoveCamera(name);
-                       
+                      
                     }
 
                 }
@@ -407,10 +408,21 @@ public class CameraControlV3 : MonoBehaviour
     bool CamIsBlend;
     IEnumerator IsvirMoveCamera(string name)
     {
-        
-        int i = FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera.Count-1 ;
-        DrivenCamera.m_AnimatedTarget.Play(FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera[i].name);
-        yield return null;
+        int i = 0;
+        if (FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera.Count !=0)
+        {
+             i = FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera.Count - 1;
+            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera[i].name);
+            yield return null;
+        }
+        else
+        {
+            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[IsEnterCamera].virOneCamera[i].name);
+            yield return null;
+        }
+      
+     
+       
         CameraHandoverTime(CameraStartTime);
         while (true)
         {
