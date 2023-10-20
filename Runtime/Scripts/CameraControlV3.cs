@@ -63,6 +63,7 @@ public class CameraControlV3 : MonoBehaviour
     private Vector2 TouTapVetor;
     private List<CinemachineVirtualCameraBase> CameraChilds=new List<CinemachineVirtualCameraBase>();
     private Dictionary<string, fixedCameraRota> FixedCamera = new Dictionary<string, fixedCameraRota>();
+    private bool MoveEnd=true;
     // Start is called before the first frame update
 
     #region StartData
@@ -147,7 +148,7 @@ public class CameraControlV3 : MonoBehaviour
         MainCamera.m_CameraActivatedEvent.AddListener(virCamerathis);
 
         //StartMoveCamera.AddListener(StartCameraName);
-
+       
         Invoke("IsSecurity", 0.2f);
         StartCoroutine(EpicJudgment());
     }
@@ -288,11 +289,12 @@ public class CameraControlV3 : MonoBehaviour
        
         if (name != Isname)
         {
-         
+           
             Isname = name;
-            //StopAllCoroutines();
-            StopCoroutine(IsvirMoveCamera(names));
-            StopCoroutine(IsvirCamera(name));
+            StopAllCoroutines();
+            //StopCoroutine(IsvirMoveCamera(names));
+            //StopCoroutine(IsvirCamera(name));
+            StartCoroutine(EpicJudgment());
             if (FixedCamera.ContainsKey(name))
             {
                 
@@ -397,6 +399,7 @@ public class CameraControlV3 : MonoBehaviour
                 }
             }
         }
+      
     }
     private void MoveCamera(string name,bool value=false)//非固定相机
     {
