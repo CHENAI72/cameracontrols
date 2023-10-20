@@ -373,14 +373,9 @@ public class CameraControlV3 : MonoBehaviour
                         }
                         else
                         {
-                            if (FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
-                            {
-                                StartCoroutine(IsvirMoveCamera(name));
-                            }
-                            else
-                            {
+                           
                                 MoveCamera(name);
-                            }
+                            
                           
                           
                         }
