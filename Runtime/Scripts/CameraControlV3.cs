@@ -290,8 +290,8 @@ public class CameraControlV3 : MonoBehaviour
         {
          
             Isname = name;
-            StopCoroutine(IsvirMoveCamera(names, DrivenCamera.m_DefaultBlend.m_Time));
-            StopCoroutine(IsvirCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
+            StopCoroutine(IsvirMoveCamera(names));
+            StopCoroutine(IsvirCamera(name));
             if (FixedCamera.ContainsKey(name))
             {
                 
@@ -315,22 +315,24 @@ public class CameraControlV3 : MonoBehaviour
                     }
                     else if (FixedCamera[name].ISZHONG && FixedCamera[name].virCamera.Count != 0 && IsFixedCamera)
                     {
-                        StartCoroutine(IsvirCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
+                        StartCoroutine(IsvirCamera(name));
                     }
                     else if (FixedCamera[name].IsOne && FixedCamera[name].virOneCamera.Count != 0 && IsFixedCamera != true)
                     {
 
-                        StartCoroutine(IsvirCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
+                        StartCoroutine(IsvirCamera(name));
                         IsEnterCamera = name;
+                     
                     }
                     else
                     {
                         DrivenCamera.m_AnimatedTarget.Play(name);
+                        IsFixedCamera = true;
                     }
                 }
                
                 FixedCamera[name].ISROTA = true;
-                IsFixedCamera = true;
+              
                 LookCamera = false;
                 if (CameraOffset != null)
                 {
@@ -352,18 +354,21 @@ public class CameraControlV3 : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log(DrivenCamera.LiveChild.Name);
+                    
                     if (FixedCamera.ContainsKey(DrivenCamera.LiveChild.Name))
                     {
                         
-                        if (IsEnterCamera != null && IsEnterCamera != "" && FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
+                        if (IsEnterCamera != null && IsEnterCamera != "")
                         {
-                      
-                            StartCoroutine(IsvirMoveCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
-                        }
-                        else if (IsEnterCamera == null || IsEnterCamera == "" && FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
-                        {
-                            StartCoroutine(IsvirbrackMoveCamera(DrivenCamera.LiveChild.Name, DrivenCamera.m_DefaultBlend.m_Time));
+                            if ( FixedCamera[DrivenCamera.LiveChild.Name].IsBreakMoveTransition)
+                            {
+                                StartCoroutine(IsvirMoveCamera(name));
+                            }
+                            else
+                            {
+                                MoveCamera(name);
+                            }
+                            
                         }
                         else
                         {
@@ -399,81 +404,108 @@ public class CameraControlV3 : MonoBehaviour
         IsFixedCamera = false;
         LookCamera = true;
     }
-    IEnumerator IsvirbrackMoveCamera(string name, float time)
+    bool CamIsBlend;
+    IEnumerator IsvirMoveCamera(string name)
     {
-
-        int i = FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera.Count - 1;
+        
+        int i = FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera.Count-1 ;
+        DrivenCamera.m_AnimatedTarget.Play(FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera[i].name);
         CameraHandoverTime(CameraStartTime);
         while (true)
         {
 
-            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[DrivenCamera.LiveChild.Name].virOneCamera[i].name);
-            yield return new WaitForSeconds(time);
-            i--;
-            if (i < 0)
+            if (CamIsBlend != DrivenCamera.IsBlending)
             {
+                if (CamIsBlend)
+                {
+                    i--;
+                    if (i < 0)
+                    {
 
-                IsEnterCamera = "";
-                IsFixedCamera = false;
-                LookCamera = true;
-
-                DrivenCamera.m_AnimatedTarget.Play(name);
-                StopCoroutine(IsvirMoveCamera(names, DrivenCamera.m_DefaultBlend.m_Time));
-                break;
+                        IsEnterCamera = "";
+                        IsFixedCamera = false;
+                        LookCamera = true;
+                        DrivenCamera.m_AnimatedTarget.Play(name);
+                        StopCoroutine(IsvirMoveCamera(name));
+                        break;
+                    }
+                    DrivenCamera.m_AnimatedTarget.Play(FixedCamera[IsEnterCamera].virOneCamera[i].name);
+                  
+                }
+                CamIsBlend = DrivenCamera.IsBlending;
             }
+            yield return null;
+          
         }
     }
-    IEnumerator IsvirMoveCamera(string name,float time)
-    {
-       
-        int i = FixedCamera[IsEnterCamera].virOneCamera.Count-1 ;
-        CameraHandoverTime(CameraStartTime);
-        while (true)
-        {
-            
-            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[IsEnterCamera].virOneCamera[i].name);
-            yield return new WaitForSeconds(time);
-            i--;
-            if (i < 0)
-            {
-               
-                IsEnterCamera = "";
-                IsFixedCamera = false;
-                LookCamera = true;
-              
-                DrivenCamera.m_AnimatedTarget.Play(name);
-                StopCoroutine(IsvirMoveCamera(names, DrivenCamera.m_DefaultBlend.m_Time));
-                break;
-            }
-        }
-    }
-    IEnumerator IsvirCamera(string name,float time)
+    bool Blending;
+    IEnumerator IsvirCamera(string name)
     {
         
         int i = 0;
+        if (IsFixedCamera)
+        {
+            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virCamera[i].name);
+        }
+        else
+        {
+            DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virOneCamera[i].name);
+        }
+       
         while (true)
         {
 
             
             if (IsFixedCamera)
             {
-                
-                DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virCamera[i].name);
+
+               
+                if (Blending != DrivenCamera.IsBlending)
+                {
+                    if (Blending)
+                    {
+                        //有问题
+                       
+                        yield return null;
+                        i++;
+                        if (i >FixedCamera[name].virCamera.Count-1 )
+                        {
+                            
+                            DrivenCamera.m_AnimatedTarget.Play(name);
+                            StopCoroutine(IsvirCamera(name));
+                            break;
+                        }
+                        DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virCamera[i].name);
+                    }
+                    Blending = DrivenCamera.IsBlending;
+                }
+              
             }
             else
             {
-                DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virOneCamera[i].name);
-            }
-           
-            yield return new WaitForSeconds(time);
-            i++;
-            if (i > FixedCamera[name].virOneCamera.Count - 1)
-            {
               
-                DrivenCamera.m_AnimatedTarget.Play(name);
-                StopCoroutine(IsvirCamera(name, DrivenCamera.m_DefaultBlend.m_Time));
-                break;
+                if (Blending != DrivenCamera.IsBlending)
+                {
+                    if (Blending)
+                    {
+                        i++;
+                        if (i > FixedCamera[name].virOneCamera.Count - 1)
+                        {
+
+                            DrivenCamera.m_AnimatedTarget.Play(name);
+                            IsFixedCamera = true;
+                            StopCoroutine(IsvirCamera(name));
+                            break;
+                        }
+                        DrivenCamera.m_AnimatedTarget.Play(FixedCamera[name].virOneCamera[i].name);
+                    }
+                    Blending = DrivenCamera.IsBlending;
+                }
             }
+          
+            yield return null;
+           
+          
         }
     }
     private void FreeLookCameraTransitions(bool value)
