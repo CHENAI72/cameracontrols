@@ -63,7 +63,7 @@ public class CameraControlV3 : MonoBehaviour
     private Vector2 TouTapVetor;
     private List<CinemachineVirtualCameraBase> CameraChilds=new List<CinemachineVirtualCameraBase>();
     private Dictionary<string, fixedCameraRota> FixedCamera = new Dictionary<string, fixedCameraRota>();
-    private bool MoveEnd=true;
+
     // Start is called before the first frame update
 
     #region StartData
