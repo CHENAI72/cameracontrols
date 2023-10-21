@@ -7,42 +7,45 @@ using DG.Tweening;
 public class fixedCameraRota : MonoBehaviour
 {
 
-    [SerializeField] bool TheISRota = false;
-    [SerializeField] bool TheIs2D = false;
-    [SerializeField] bool BreakMoveTransition;
-    [SerializeField] bool IsTransition;
-    [SerializeField] bool IsTransitionOne;
-    [SerializeField] List<CinemachineVirtualCamera> ThisTransitionOneCamera;
-    [SerializeField] List<CinemachineVirtualCamera> ThisTransitionCamera;//要过渡的虚拟相机
-
+    [SerializeField] bool TheRota ;
+    [SerializeField] bool TheCut ;
+    [SerializeField] List<GameObject> TransitionCamera;//经过那些虚拟相机需要过渡
+    [SerializeField] List<CinemachineVirtualCamera> TransitionList;//过渡的虚拟相机
+   
     private bool IsRota = false;
     private float XAxis;
     private float YAxis;
     private float TheFov;
     private void Awake()
     {
-
-        XAxis = this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
-        YAxis= this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
-        TheFov = this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+        if (this.GetComponent<CinemachineVirtualCamera>() != null)
+        {
+            XAxis = this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value;
+            YAxis = this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
+            TheFov = this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+        }
+        
     }
   
     public void MoveStart()
     {
- 
-        DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
-            x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = x, XAxis, 0.6f);
-        DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value,
-            x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = x, YAxis, 0.6f);
-        DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView,
-          x => this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = x, TheFov, 0.6f);
+        if (this.GetComponent<CinemachineVirtualCamera>()!=null)
+        {
+            DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
+        x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value = x, XAxis, 0.6f);
+            DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value,
+                x => this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = x, YAxis, 0.6f);
+            DOTween.To(() => this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView,
+              x => this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = x, TheFov, 0.6f);
+        }
+    
     }
    
     public bool therota
     {
         get
         {
-            return TheISRota;
+            return TheRota;
         }
     }
     public bool ISROTA
@@ -56,44 +59,24 @@ public class fixedCameraRota : MonoBehaviour
             IsRota = value;
         }
     }
-    public bool IsBreakMoveTransition
+    public List<GameObject> m_TransitionCamera
     {
-        get { return BreakMoveTransition; }
+        get { return TransitionCamera; }
     }
-    public bool IsOne
+  
+    
+    public List<CinemachineVirtualCamera> m_TransitionList
     {
-        get
-        {
-            return IsTransitionOne;
-        }
+        get { return TransitionList; }
       
     }
-    public List<CinemachineVirtualCamera> virCamera
-    {
-        get { return ThisTransitionCamera; }
-       
-    }
-    public List<CinemachineVirtualCamera> virOneCamera
-    {
-        get { return ThisTransitionOneCamera; }
-      
-    }
-    public bool ISZHONG
-    {
-        get
-        {
-         
-            return IsTransition;
-           
-        }
-     
-    }
+   
 
     public bool theIs2D
     {
         get
         {
-            return TheIs2D;
+            return TheCut;
         }
     }
     public float ZoomLens(float Dis,float Min,float Max)
