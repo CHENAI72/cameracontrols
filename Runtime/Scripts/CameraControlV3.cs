@@ -277,7 +277,8 @@ public class CameraControlV3 : MonoBehaviour
         {
 
             Isname = name;
-            StopCoroutine(IsvirCamera(name));
+            StopAllCoroutines();
+            StartCoroutine(EpicJudgment());
             if (FixedCamera.ContainsKey(name))
             {
 
