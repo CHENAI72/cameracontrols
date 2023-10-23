@@ -24,7 +24,17 @@ public class fixedCameraRota : MonoBehaviour
             YAxis = this.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value;
             TheFov = this.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
         }
-        
+
+        if (TransitionCamera.Count!=0)
+        {
+            for (int i = 0; i < TransitionCamera.Count; i++)
+            {
+                if (TransitionCamera[i].GetComponent<CinemachineVirtualCamera>() == null && TransitionCamera[i].GetComponent<CinemachineFreeLook>() == null)
+                {
+                    Debug.LogError($"请不要在{gameObject.name}的TransitionCamera列表中添加没有挂载虚拟相机的组件.");
+                }
+            } 
+        }
     }
   
     public void MoveStart()

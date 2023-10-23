@@ -86,6 +86,10 @@ public class CameraControlV3 : MonoBehaviour
             if (CameraChilds[i].GetComponent<CinemachineFreeLook>() != null)
             {
                 FreeLook = CameraChilds[i].GetComponent<CinemachineFreeLook>();
+                if (FreeLook.GetComponent<fixedCameraRota>()==null)
+                {
+                    Debug.LogError($"请将fixedCameraRota添加到{FreeLook.gameObject.name}上.");
+                }
                 Isname = FreeLook.name;
                 FixedCamera[Isname].ISROTA = true;
                 break;
