@@ -5,19 +5,23 @@ using Cinemachine;
 using DG.Tweening;
 using UnityEngine.Rendering;
 using UnityEngine.Events;
+using System.Reflection;
 using System;
+
 public class CameraControlV3 : MonoBehaviour
 {
+    private enum Components
+    {
+        No,DollyCamera
+    }
+
     [SerializeField] CinemachineBrain MainCamera;
     [SerializeField] CinemachineStateDrivenCamera DrivenCamera;
     [SerializeField] DollyMoveCamera DollyMoveCam;
     [SerializeField] Volume VolumeColor;
 
-
     private float AColor = 1;
     private List<VolumeComponent> profile;
-    private CinemachineCameraOffset CameraOffset;
-    private CinemachineFreeLook FreeLook;
     public UnityEvent<string> StartMoveCamera;//切换开始时响应，string为开始摄像机名称
     public UnityEvent<string> MoveCameraArrival;//切换结束时响应，string为当前摄像机名称
     public UnityEvent<Vector2> OnFreeLookCameraRota;//在旋转
@@ -31,19 +35,18 @@ public class CameraControlV3 : MonoBehaviour
     [SerializeField] bool Black = false;
     [SerializeField] float blackCameraTime = 0.5f;
 
-    [Header("fixedCameraInput")]
+    [Header("FixedCameraInput")]
     [SerializeField] float FixedZoomSpeed = 2f;
     [SerializeField] float FixedZoomMin = 15f;
     [SerializeField] float FixedZoomMax = 40f;
 
-    [Header("DollyCameraSpeed")]
-    [SerializeField] float DollyCameraSpeed = 0.3f;
-
+    [Header("Component")]
+    [SerializeField] Components m_AddComponent=Components.No;
 
     private string Dollyname;
     private float CameraStartTime;
     private string EndCamera;
-    private Vector2 CameraPos;
+
 
     private string Isname;
     private bool dollybool;
@@ -53,7 +56,8 @@ public class CameraControlV3 : MonoBehaviour
     private Vector2 TouTapVetor;
     private List<CinemachineVirtualCameraBase> CameraChilds = new List<CinemachineVirtualCameraBase>();
     private Dictionary<string, fixedCameraRota> FixedCamera = new Dictionary<string, fixedCameraRota>();
-
+    private Dictionary<string, CinemachineFreeLook>  FreeLook= new Dictionary<string, CinemachineFreeLook>();
+    private Dictionary<string, Vector2> CameraPos = new Dictionary<string, Vector2>();
     // Start is called before the first frame update
 
     #region StartData
@@ -73,44 +77,34 @@ public class CameraControlV3 : MonoBehaviour
             {
                 FixedCamera.Add(CameraChilds[i].name, CameraChilds[i].GetComponent<fixedCameraRota>());
             }
-            if (CameraChilds[i].GetComponent<CinemachineFreeLook>() != null)
+            else
             {
-                CameraOffset = CameraChilds[i].GetComponent<CinemachineFreeLook>().GetComponent<CinemachineCameraOffset>();
-                CameraPos = new Vector2(CameraChilds[i].GetComponent<CinemachineFreeLook>().m_XAxis.Value,
-                    CameraChilds[i].GetComponent<CinemachineFreeLook>().m_YAxis.Value);
+                Debug.LogError($"请将fixedCameraRota添加到{CameraChilds[i].name}上.");
+                return;
             }
+         
 
         }
+        int point = 0;
         for (int i = 0; i < CameraChilds.Count; i++)
         {
             if (CameraChilds[i].GetComponent<CinemachineFreeLook>() != null)
             {
-                FreeLook = CameraChilds[i].GetComponent<CinemachineFreeLook>();
-                if (FreeLook.GetComponent<fixedCameraRota>()==null)
-                {
-                    Debug.LogError($"请将fixedCameraRota添加到{FreeLook.gameObject.name}上.");
-                }
-                Isname = FreeLook.name;
-                FixedCamera[Isname].ISROTA = true;
-                break;
+                FreeLook.Add(CameraChilds[i].name, CameraChilds[i].GetComponent<CinemachineFreeLook>());
+                CameraPos.Add(CameraChilds[i].name, new Vector2(FreeLook[CameraChilds[i].name].m_XAxis.Value, FreeLook[CameraChilds[i].name].m_YAxis.Value));
+
             }
-            else if (i == CameraChilds.Count - 1)
-            {
-                int point = 0;
-                for (int j = 0; j < CameraChilds.Count; j++)
-                {
-                    if (CameraChilds[j].m_Priority > point)
+                    if (CameraChilds[i].m_Priority > CameraChilds[point].m_Priority )
                     {
-                        point = j;
+                        point = i;
 
                     }
-                }
-                Isname = CameraChilds[point].name;
-                FixedCamera[Isname].ISROTA = true;
 
-
-            }
         }
+        Isname = CameraChilds[point].name;
+        FixedCamera[Isname].ISROTA = true;
+
+
         if (DollyMoveCam != null)//要改掉以插件的形式
         {
             Dollyname = DollyMoveCam.dollyCamera.name;
@@ -142,6 +136,7 @@ public class CameraControlV3 : MonoBehaviour
 
         Invoke("IsSecurity", 0.2f);
         StartCoroutine(EpicJudgment());
+        
     }
     private void OnDisable()
     {
@@ -163,25 +158,49 @@ public class CameraControlV3 : MonoBehaviour
     }
     #endregion
 
-
+    #region CameraOffset
+    public void CameraSetOffset(string CameraName,Vector3 value,float time) 
+    {
+      
+        if (FixedCamera.ContainsKey(CameraName))
+        {
+            FixedCamera[CameraName].SetOffset(value, time);
+        }
+        else
+        {
+            Debug.LogError($"列表里没有{CameraName}这个相机");
+        }
+    }
+    public void CameraBackOffset(string CameraName,float time)
+    {
+        if (FixedCamera.ContainsKey(CameraName))
+        {
+            FixedCamera[CameraName].MoveStartOffset(time);
+        }
+        else
+        {
+            Debug.LogError($"列表里没有{CameraName}这个相机");
+        }
+    }
+    #endregion
 
     #region FreeLookCameraStartPos
     public void FreeLookCameraPosSave()
     {
-        if (FreeLook != null&& Isname== FreeLook.name)
+        if (FreeLook.ContainsKey(Isname) &&CameraPos.ContainsKey(Isname))
         {
-            CameraPos = new Vector2(FreeLook.m_XAxis.Value, FreeLook.m_YAxis.Value);
+            CameraPos[Isname] = new Vector2(FreeLook[Isname].m_XAxis.Value, FreeLook[Isname].m_YAxis.Value);
         }
 
     }
-
+    
     public void FreeLookBackStartPos(float time)
     {
       
-        if (FreeLook != null&& Isname == FreeLook.name)
+        if (FreeLook.ContainsKey(Isname) && CameraPos.ContainsKey(Isname))
         {
-            DOTween.To(() => FreeLook.m_XAxis.Value, x => FreeLook.m_XAxis.Value = x, CameraPos.x, time);
-            DOTween.To(() => FreeLook.m_YAxis.Value, x => FreeLook.m_YAxis.Value = x, CameraPos.y, time);
+            DOTween.To(() => FreeLook[Isname].m_XAxis.Value, x => FreeLook[Isname].m_XAxis.Value = x, CameraPos[Isname].x, time);
+            DOTween.To(() => FreeLook[Isname].m_YAxis.Value, x => FreeLook[Isname].m_YAxis.Value = x, CameraPos[Isname].y, time);
         }
     }
     #endregion
@@ -216,15 +235,10 @@ public class CameraControlV3 : MonoBehaviour
                     if (dollybool != true)
                     {
 
-                        if (CameraOffset != null)
-                        {
-                            DOTween.To(() => CameraOffset.m_Offset, x => CameraOffset.m_Offset = x, Vector3.zero, 1f);
-                        }
-
                         dollybool = true;
 
                         DollyMoveCam.StartToggle();
-                        DollyMoveCam.cart.m_Speed = DollyCameraSpeed;
+                       // DollyMoveCam.cart.m_Speed = DollyCameraSpeed;
                         FreeLookCameraTransitions(true);
                     }
 
@@ -286,13 +300,15 @@ public class CameraControlV3 : MonoBehaviour
             if (FixedCamera.ContainsKey(name))
             {
 
-                if (value|| FixedCamera[name].theIs2D)
+                if (value)
                 {
 
                     CameraHandoverTime(0);
                     DrivenCamera.m_AnimatedTarget.Play(name);
                     FalseDollyAll();
-      
+                    CamIsBlending = !CamIsBlending;
+
+
                 }
                 else
                 {
@@ -324,10 +340,7 @@ public class CameraControlV3 : MonoBehaviour
                     item.Value.MoveStart();
                 }
                 FixedCamera[name].ISROTA = true;
-                if (CameraOffset != null)
-                {
-                    DOTween.To(() => CameraOffset.m_Offset, x => CameraOffset.m_Offset = x, Vector3.zero, 1f);
-                }
+             
               
             }
 
@@ -377,7 +390,7 @@ public class CameraControlV3 : MonoBehaviour
 
         DOTween.To(() => time, x => time = x, 1, 0.5f).OnComplete(() =>
         {
-            FreeLook.m_Transitions.m_InheritPosition = value;
+            FreeLook[Isname].m_Transitions.m_InheritPosition = value;
         });
 
     }
@@ -435,12 +448,12 @@ public class CameraControlV3 : MonoBehaviour
 
                 if (MoveX > 0.1f || MoveX < -0.1f)
                 {
-                    FreeLook.m_XAxis.m_InputAxisValue = MoveX;
+                    FreeLook[Isname].m_XAxis.m_InputAxisValue = MoveX;
 
                 }
                 if (MoveY > 0.1f || MoveY < -0.1f)
                 {
-                    FreeLook.m_YAxis.m_InputAxisValue = MoveY;
+                    FreeLook[Isname].m_YAxis.m_InputAxisValue = MoveY;
 
                 }
 
@@ -488,13 +501,13 @@ public class CameraControlV3 : MonoBehaviour
             float MoveY = vector.y * 0.1f;
             if (MoveX > 0.1f || MoveX < -0.1f)
             {
-                    FreeLook.m_XAxis.m_InputAxisValue = MoveX;
+                    FreeLook[Isname].m_XAxis.m_InputAxisValue = MoveX;
             }
 
             if (MoveY > 0.1f || MoveY < -0.1f)
             {
 
-                    FreeLook.m_YAxis.m_InputAxisValue = MoveY;
+                    FreeLook[Isname].m_YAxis.m_InputAxisValue = MoveY;
             }
 
             TouTapVetor = vector;
@@ -512,16 +525,16 @@ public class CameraControlV3 : MonoBehaviour
                 case ZoomType.ZoomIn:
                     if (anchor.ZoomDistance > 0.1f)
                     {
-                        FreeLook.m_Lens.FieldOfView -= anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed * 0.005f;
-                        FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
+                        FreeLook[Isname].m_Lens.FieldOfView -= anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed * 0.005f;
+                        FreeLook[Isname].m_Lens.FieldOfView = Mathf.Clamp(FreeLook[Isname].m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
                     }
 
                     break;
                 case ZoomType.ZoomOut:
                     if (anchor.ZoomDistance > 0.1f)
                     {
-                        FreeLook.m_Lens.FieldOfView += anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed * 0.005f;
-                        FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
+                        FreeLook[Isname].m_Lens.FieldOfView += anchor.ZoomDistance * Time.deltaTime * freeLookZoomSpeed * 0.005f;
+                        FreeLook[Isname].m_Lens.FieldOfView = Mathf.Clamp(FreeLook[Isname].m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
                     }
 
                     break;
@@ -575,8 +588,8 @@ public class CameraControlV3 : MonoBehaviour
             FixedCamera[Isname].therota && FreeLook != null)
         {
 
-            FreeLook.m_Lens.FieldOfView -= value;
-            FreeLook.m_Lens.FieldOfView = Mathf.Clamp(FreeLook.m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
+            FreeLook[Isname].m_Lens.FieldOfView -= value;
+            FreeLook[Isname].m_Lens.FieldOfView = Mathf.Clamp(FreeLook[Isname].m_Lens.FieldOfView, freeLookZoomMin, freeLookZoomMax);
         }
     }
     IEnumerator EpicJudgment()
@@ -587,8 +600,8 @@ public class CameraControlV3 : MonoBehaviour
         if (Isname != "" && Isname != null && FixedCamera.ContainsKey(Isname) && FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>() != null)
             FixedCameraRota = new Vector2(FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
             FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value);
-        if (FreeLook != null)
-            FreeLookCameraRota = new Vector2(FreeLook.m_XAxis.Value, FreeLook.m_YAxis.Value);
+        if (FreeLook.ContainsKey(Isname))
+            FreeLookCameraRota = new Vector2(FreeLook[Isname].m_XAxis.Value, FreeLook[Isname].m_YAxis.Value);
 
         while (true)
         {
@@ -611,8 +624,8 @@ public class CameraControlV3 : MonoBehaviour
                 {
                     if (FreeLook != null)
                     {
-                        FreeLook.m_XAxis.m_InputAxisValue = 0;
-                        FreeLook.m_YAxis.m_InputAxisValue = 0;
+                        FreeLook[Isname].m_XAxis.m_InputAxisValue = 0;
+                        FreeLook[Isname].m_YAxis.m_InputAxisValue = 0;
                     }
 
                 }
@@ -634,11 +647,11 @@ public class CameraControlV3 : MonoBehaviour
                    
                 }
             }
-            if (FreeLook != null)
+            if (FreeLook.ContainsKey(Isname))
             {
-                if (FreeLookCameraRota.x != FreeLook.m_XAxis.Value || FreeLookCameraRota.y != FreeLook.m_YAxis.Value)
+                if (FreeLookCameraRota.x != FreeLook[Isname].m_XAxis.Value || FreeLookCameraRota.y != FreeLook[Isname].m_YAxis.Value)
                 {
-                    OnFreeLookCameraRota?.Invoke(new Vector2(FreeLook.m_XAxis.Value, FreeLook.m_YAxis.Value));
+                    OnFreeLookCameraRota?.Invoke(new Vector2(FreeLook[Isname].m_XAxis.Value, FreeLook[Isname].m_YAxis.Value));
                 }
             }
 
@@ -658,8 +671,8 @@ public class CameraControlV3 : MonoBehaviour
             if (Isname != "" && Isname != null && FixedCamera.ContainsKey(Isname) && FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>())
                 FixedCameraRota = new Vector2(FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.Value,
                 FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value);
-            if (FreeLook != null)
-                FreeLookCameraRota = new Vector2(FreeLook.m_XAxis.Value, FreeLook.m_YAxis.Value);
+            if (FreeLook.ContainsKey(Isname))
+                FreeLookCameraRota = new Vector2(FreeLook[Isname].m_XAxis.Value, FreeLook[Isname].m_YAxis.Value);
         }
     }
     #endregion
@@ -693,5 +706,62 @@ public class CameraControlV3 : MonoBehaviour
 
         }
     }
+//#if UNITY_EDITOR
+//    private static List<GameObject> GameComponents=new List<GameObject>();
+//    private void OnValidate()
+//    {
+
+//        if (Application.isPlaying!=true)
+//        {
+//            switch (m_AddComponent)
+//            {
+//                case Components.No:
+//                    if (GameComponents.Count==0)
+//                    {
+//                        return;
+//                    }
+//                    for (int i = 0; i < gameObject.GetComponents<Component>().Length; i++)
+//                    {
+//                        Debug.Log(gameObject.GetComponents<Component>()[i]+"dsf"+ GameComponents[0]);
+//                        if (GameComponents.Exists(t=>t==gameObject.GetComponents<Component>()[i]))
+//                        {
+                         
+//                            Destroy(gameObject.GetComponents<Component>()[i]);
+//                            GameComponents.Remove(GameComponents[i]);
+//                        }
+//                    }
+//                    break;
+//                case Components.DollyCamera:
+//                    if (gameObject.GetComponent<DollyMoveCamera>())
+//                    {
+//                        return;
+//                    }
+
+//                       AddComponent(this.gameObject, "com.hmi.cameracontrol", "DollyMoveCamera");
+
+                    
+//                    break;
+//                default:
+//                    break;
+//            } 
+//        }
+//    }
+//    public static Component AddComponent(GameObject go, string assembly, string classname)
+//    {
+//        var asmb = System.Reflection.Assembly.Load(assembly);
+//        var t = asmb.GetType( classname); 
+       
+//        if (null != t)
+//        {
+//            GameComponents.Add(go);
+//            return go.AddComponent(t);
+//        }
+//        else
+//            return null;
+       
+//    }
+//#endif
+
     #endregion
 }
+

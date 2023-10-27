@@ -8,7 +8,6 @@ public class fixedCameraRota : MonoBehaviour
 {
 
     [SerializeField] bool TheRota ;
-    [SerializeField] bool TheCut ;
     [SerializeField] List<GameObject> TransitionCamera;//经过那些虚拟相机需要过渡
     [SerializeField] List<CinemachineVirtualCamera> TransitionList;//过渡的虚拟相机
    
@@ -16,6 +15,8 @@ public class fixedCameraRota : MonoBehaviour
     private float XAxis;
     private float YAxis;
     private float TheFov;
+    private CinemachineCameraOffset Offset;
+    private Vector3 CamaeraOffset;
     private void Awake()
     {
         if (this.GetComponent<CinemachineVirtualCamera>() != null)
@@ -35,6 +36,11 @@ public class fixedCameraRota : MonoBehaviour
                 }
             } 
         }
+        if (this.GetComponent<CinemachineCameraOffset>()!=null)
+        {
+            Offset = this.GetComponent<CinemachineCameraOffset>();
+            CamaeraOffset = Offset.m_Offset;
+        }
     }
   
     public void MoveStart()
@@ -50,7 +56,30 @@ public class fixedCameraRota : MonoBehaviour
         }
     
     }
-   
+   public void MoveStartOffset(float time)
+    {
+      
+        if (Offset != null)
+        {
+            DOTween.To(() => Offset.m_Offset, x => Offset.m_Offset = x, CamaeraOffset, time);
+        }
+        else
+        {
+            Debug.LogError($"{gameObject.name}没有添加CinemachineCameraOffset组件");
+        }
+    }
+    public void SetOffset(Vector3 vector,float time)
+    {
+        
+        if (Offset != null)
+        {
+            DOTween.To(() => Offset.m_Offset, x => Offset.m_Offset = x, vector, time);
+        }
+        else
+        {
+            Debug.LogError($"{gameObject.name}没有添加CinemachineCameraOffset组件");
+        }
+    }
     public bool therota
     {
         get
@@ -82,13 +111,7 @@ public class fixedCameraRota : MonoBehaviour
     }
    
 
-    public bool theIs2D
-    {
-        get
-        {
-            return TheCut;
-        }
-    }
+   
     public float ZoomLens(float Dis,float Min,float Max)
     {
         return Mathf.Clamp(Dis, Min, Max);
