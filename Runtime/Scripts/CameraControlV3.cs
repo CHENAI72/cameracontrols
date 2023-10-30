@@ -40,8 +40,8 @@ public class CameraControlV3 : MonoBehaviour
     [SerializeField] float FixedZoomMin = 15f;
     [SerializeField] float FixedZoomMax = 40f;
 
-    [Header("Component")]
-    [SerializeField] Components m_AddComponent=Components.No;
+    //[Header("Component")]
+    //[SerializeField] Components m_AddComponent=Components.No;
 
     private string Dollyname;
     private float CameraStartTime;
@@ -304,8 +304,8 @@ public class CameraControlV3 : MonoBehaviour
                 {
 
                     CameraHandoverTime(0);
-                    DrivenCamera.m_AnimatedTarget.Play(name);
                     FalseDollyAll();
+                    DrivenCamera.m_AnimatedTarget.Play(name);
                     CamIsBlending = !CamIsBlending;
 
 
