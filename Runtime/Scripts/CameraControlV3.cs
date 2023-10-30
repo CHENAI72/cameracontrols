@@ -79,7 +79,7 @@ public class CameraControlV3 : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"请将fixedCameraRota添加到{CameraChilds[i].name}上.");
+                Debug.LogError($"请将fixedCameraRota添加到{CameraChilds[i].name}上,程序已终止.");
                 return;
             }
          
@@ -612,21 +612,17 @@ public class CameraControlV3 : MonoBehaviour
                 TouTapVetor = Vector2.zero;
                 if (Isname != "" && Isname != null && FixedCamera.ContainsKey(Isname) && FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>())
                 {
-                    if (FixedCamera.Count != 0)
-                    {
+                   
                         FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InputAxisValue = 0;
                         FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InputAxisValue = 0;
-
-                    }
 
                 }
                 if (Isname != "" && Isname != null && FixedCamera.ContainsKey(Isname) && FixedCamera[Isname].GetComponent<CinemachineVirtualCamera>()==null)
                 {
-                    if (FreeLook != null)
-                    {
+                   
                         FreeLook[Isname].m_XAxis.m_InputAxisValue = 0;
                         FreeLook[Isname].m_YAxis.m_InputAxisValue = 0;
-                    }
+                   
 
                 }
 
